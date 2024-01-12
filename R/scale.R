@@ -111,7 +111,8 @@ format_input_data<- function(){
               cohort_size = sum(cohort_size)) |>
     mutate(mortality = deaths/cohort_size,
            clinical = cases/ cohort_size,
-           dalys_pp = dalys/ cohort_size) 
+           dalys_pp = dalys/ cohort_size,
+           iso3c= iso3c) 
   
   intvn_scenario<- scenario         # coverage data for intervention scenario
   coverage_data<- coverage_data |>
@@ -119,7 +120,7 @@ format_input_data<- function(){
            country_code == iso3c)
   
   # outcomes averted + other case metrics
-  outcomes_averted <- round(pull_outcomes_averted_per_100k_vacc(intvn_results , baseline_results , doses))
+  outcomes_averted <- round(pull_outcomes_averted_per_100k_vacc(intvn_results , bl_results , doses))
   case_metrics<- pull_other_case_metrics(site_data, intvn_results, bl_results)
   
   return(list('processed_output' = processed_output,
