@@ -2,7 +2,7 @@
 % Please edit documentation in R/parameterize.R
 \name{pull_input_params}
 \alias{pull_input_params}
-\title{Paraemterize site + urbanicty of interest}
+\title{parameterize site + urbanicty of interest}
 \usage{
 pull_input_params(
   site_name,
@@ -17,17 +17,21 @@ pull_input_params(
 \arguments{
 \item{site_name}{name of site}
 
-\item{ur}{urbanicity}
+\item{ur}{urbanicity, urban or rural}
 
 \item{site_data}{site file}
 
 \item{coverage_data}{VIMC vaccine forecast for site of interest}
 
 \item{scenario}{vaccine forecast scenario}
+
+\item{parameter_draw}{parameter draw value}
+
+\item{quick_run}{quick_run setting (boolean)}
 }
 \value{
 site file with additional variables 'rtss_coverage', 'rtss_booster_coverage', 'r21_coverage', 'r21_booster_coverage'
 }
 \description{
-Paraemterize site + urbanicty of interest
+parameterize site + urbanicty of interest
 }

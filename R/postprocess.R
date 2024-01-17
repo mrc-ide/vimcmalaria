@@ -1,3 +1,10 @@
+#' postprocess model output at the site level
+#' @param model   model output
+#' @param site_name site name
+#' @param ur 
+#' @param scenario vaccine scenario
+#' @returns list of parameters for all model runs
+#' @export
 process_output<- function(model, site_name, ur, scenario){
   
   message('postprocessing')
@@ -40,7 +47,9 @@ process_output<- function(model, site_name, ur, scenario){
   return(list('processed_output' = output, 'doses' = doses_per_year, 'prevalence' = prev))
 }
 
-
+#' expand VIMC life expectancy data frame to single yea
+#' @param le   VIMC life expectacy input
+#' @export
 expand_life_expectancy<- function(le){
   
   le<- le |>
@@ -64,6 +73,15 @@ expand_life_expectancy<- function(le){
   return(le)
 }
 
+#' VIMC postprocessing
+#' @param output  model output
+#' @param le VIMC life expectancy input
+#' @param site_data site file
+#' @param site_name name of site
+#' @param ur urbanicity
+#' @param vimc_population VIMC population input
+#' @param pop_single_yr VIMC population input (single year age groups)
+#' @export
 vimc_postprocess<- function(output, le, site_data, site_name, ur, vimc_pop, pop_single_yr){
   
   # fill rates out to single year age groups
@@ -119,7 +137,11 @@ vimc_postprocess<- function(output, le, site_data, site_name, ur, vimc_pop, pop_
   
 }
 
-
+#' format outputs for submission
+#' @param dt  postprocessed output
+#' @param site_name name of site
+#' @param ur urbanicity
+#' @export
 format_outputs<- function(dt, site_name, ur){
   dt <- dt |>
     mutate(
@@ -167,6 +189,13 @@ format_outputs<- function(dt, site_name, ur){
 }
 
 
+#' scale site file population to be consistent with country population input from VIMC
+#' @param site_data  site file
+#' @param site_name name of site
+#' @param ur urbanicity
+#' @param vimc_pop VIMC population input
+#' @param pop_single_yr single-year age group VIMC population input
+#' @export
 scale_population<- function(site_data, site_name, ur, vimc_pop, pop_single_yr){
   # merge in population from site files (as we only have VIMC inputs for the national level)
   # first, separately sum cases by year
@@ -225,6 +254,10 @@ scale_population<- function(site_data, site_name, ur, vimc_pop, pop_single_yr){
   
 }
 
+#' pull dosage output
+#' @param raw_output  model output
+#' @param processed_output name of site
+#' @export
 pull_doses_output <- function(raw_output, processed_output) {
   scenario <- raw_output$scenario[1]
   raw_output$year <- floor(raw_output$timestep / 365) + 2000

@@ -1,3 +1,8 @@
+#' Aggregate VIMC outputs up to the country level
+#' @param   raw_output          raw model output
+#' @param   processed_output    processed model output
+#' @returns data frame with doses of vaccine delivered per year
+#' @export
 pull_doses_output <- function(raw_output, processed_output) {
   scenario <- raw_output$scenario[1]
   raw_output$year <- floor(raw_output$timestep / 365) + 2000
@@ -45,7 +50,9 @@ pull_doses_output <- function(raw_output, processed_output) {
 
 
 
-# save plotting data  ----------------------------------------------------------
+#' format plotting data for diagnostic report
+#' @param   scenario     vaccine scenario
+#' @export
 pull_plotting_data<- function(scenario){
   
   if(scenario!="no-vaccination") {
@@ -85,39 +92,5 @@ pull_plotting_data<- function(scenario){
 
 
 
-
-pull_age_groups_time_horizon<- function(quick_run, scenario, coverage_dt){
-  
-  year<- 365
-  burnin<- 15
-  
-  if(quick_run == TRUE){
-    
-    term_yr<- 2025
-    pop_val<- 5000
-    
-    min_ages = c(0:5, 6,15,20) * year
-    max_ages = c(1:6, 15,20,200) * year -1
-    
-  } 
-  
-  else{
-    
-    pop_val<- 50000
-    term_yr<- 2100
-    
-    term_yr<- 2050
-    
-    min_ages = c(seq(0, 19, by= 1), seq(20, 90, by= 10)) * year
-    max_ages = c(seq(1, 20, by= 1), seq(30, 100, by= 10)) * year -1
-    
-  }
-  
-  return(list('term_yr' = term_yr, 
-              'pop_val' = pop_val, 
-              'min_ages'= min_ages, 
-              'max_ages' = max_ages,
-              'burnin' = burnin))
-} 
 
 

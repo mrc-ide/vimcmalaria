@@ -1,6 +1,11 @@
 # country functions ------------------------------------------------------------
+#' Aggregate VIMC outputs up to the country level
+#' @param   dt     data frame with site-level outputs to aggregate
+#' @param   pop    VIMC population input for country level (age- and year-specific)
+#' @returns data frame with aggregated outputs up to the country level
+#' @export
 aggregate_outputs<- function(dt, pop){
-  dt<- data.table(dt)
+  dt<- data.table::data.table(dt)
   
   dt[, `:=` (
     cases = sum(cases),
@@ -11,10 +16,10 @@ aggregate_outputs<- function(dt, pop){
   
   # remove cohort size, because for sites with some unmodelled locations, sum of cohort size != national population
   dt<- dt |> 
-    select(-cohort_size)
+    dplyr::select(-cohort_size)
   dt <- unique(dt, by = c('age', 'year', 'scenario'))
   pop<- pop |>
-    rename(age = age_from,
+    dplyr::rename(age = age_from,
            cohort_size = value) |>
     select(year, age, cohort_size)
   dt<- merge(dt, pop, by =c('age', 'year'))

@@ -1,7 +1,9 @@
 # parameter functions
-# parameterizing  --------------------------------------------------------------
+
 #' Make list of parameters that will apply to all model runs
 #' @param   quick_run     quick run setting
+#' @returns list of parameters for all model runs
+#' @export
 pull_age_groups_time_horizon<- function(quick_run){
 
   year<- 365
@@ -34,13 +36,16 @@ pull_age_groups_time_horizon<- function(quick_run){
               'burnin' = burnin))
 } 
 
-#' Paraemterize site + urbanicty of interest
+#' parameterize site + urbanicty of interest
 #' @param   site_name        name of site
-#' @param   ur               urbanicity
+#' @param   ur               urbanicity, urban or rural
 #' @param   site_data        site file
 #' @param   coverage_data    VIMC vaccine forecast for site of interest
 #' @param   scenario         vaccine forecast scenario
+#' @param   parameter_draw   parameter draw value
+#' @param   quick_run        quick_run setting (boolean)
 #' @returns site file with additional variables 'rtss_coverage', 'rtss_booster_coverage', 'r21_coverage', 'r21_booster_coverage'
+#' @export
 pull_input_params<- function(site_name,
                              ur, 
                              site_data,
@@ -111,6 +116,7 @@ pull_input_params<- function(site_name,
 #' @param   params           model input parameters
 #' @param   parameter_draw   parameter draw number (0-50)
 #' @returns parameters for stochastic run
+#' @export
 parameterize_stochastic_run<- function(params, parameter_draw){
   
   if (parameter_draw > 0){
@@ -129,6 +135,7 @@ parameterize_stochastic_run<- function(params, parameter_draw){
 #' @param   coverage_data    VIMC vaccine forecast for site of interest
 #' @param scenario_name scenario for vaccine forecast
 #' @returns site file with additional variables 'rtss_coverage', 'rtss_booster_coverage', 'r21_coverage', 'r21_booster_coverage'
+#' @export
 update_coverage_values<- function(site, coverage_data, scenario_name){
   
   if(scenario_name == 'no-vaccination'){
@@ -204,6 +211,7 @@ update_coverage_values<- function(site, coverage_data, scenario_name){
 #' @param   site             site file
 #' @param   terminal_year    terminal year of forecast
 #' @returns site file with extrapolated coverage values out to terminal year
+#' @export
 expand_intervention_coverage<- function(site, terminal_year){
   
   # first set terminal year to terminal year of forecast

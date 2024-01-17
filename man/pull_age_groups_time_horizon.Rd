@@ -9,6 +9,9 @@ pull_age_groups_time_horizon(quick_run)
 \arguments{
 \item{quick_run}{quick run setting}
 }
+\value{
+list of parameters for all model runs
+}
 \description{
 Make list of parameters that will apply to all model runs
 }

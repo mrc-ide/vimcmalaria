@@ -1,3 +1,7 @@
+#' Run model for site of interest
+#' @param   model_input      list with input parameters and identifying info
+#' @returns model output
+#' @export
 run_model<- function(model_input){
   message('running the model')
   

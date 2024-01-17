@@ -1,8 +1,9 @@
-
+#'   scale outputs based on cases from WMR from 2000-2020
+#' @param dt  case output at country level
+#' @param site_data site file
+#' @export 
 scale_cases<- function(dt, site_data){
   
-  # scale outputs based on cases from WMR from 2000-2020
-  # first sum cases by year (across all ages) in model output and compare
   pre_scale<- dt |>
     filter(scenario== 'no-vaccination')|>
     group_by(year) |>
@@ -36,7 +37,11 @@ scale_cases<- function(dt, site_data){
   return(dt)
 }
 
-# cases averted per fully vaccinated child
+#'   Pull additional figures for diagnostics
+#' @param intvn_output 
+#' @param baseline_output
+#' @param doses 
+#' @export 
 pull_outcomes_averted_per_100k_vacc <- function(intvn_output, baseline_output, doses) {
   
   tot_doses <-sum(doses$doses, na.rm = T)
@@ -51,6 +56,12 @@ pull_outcomes_averted_per_100k_vacc <- function(intvn_output, baseline_output, d
   
   return(res)
 }
+
+#'   Pull  figures for diagnostics
+#' @param intvn_results 
+#' @param bl_results
+#' @param site_data 
+#' @export 
 pull_other_case_metrics<- function(site_data, intvn_results, bl_results){
   # pull some numbers out for the report
   # Total cases in the country in WMR 2020 
@@ -70,7 +81,10 @@ pull_other_case_metrics<- function(site_data, intvn_results, bl_results){
   
 }
 
-
+#'  Calculate cases averted
+#' @param intvn_output 
+#' @param baseline_output
+#' @export 
 calculate_cases_averted <- function(intvn_output, baseline_output) {
   
   intvn_output<- intvn_output |> 
@@ -88,6 +102,8 @@ calculate_cases_averted <- function(intvn_output, baseline_output) {
   return(merged)
 }
 
+#'   format descriptive data for diagnostic report
+#' @export 
 format_descriptive_data<- function(){
   # pulls descriptive data from global environment
   descriptive_dt<- list('iso3c' = iso3c,
@@ -99,6 +115,8 @@ format_descriptive_data<- function(){
   return(descriptive_dt)
 }
 
+#'   format input data for diagnostic report
+#' @export 
 format_input_data<- function(){
   
   
