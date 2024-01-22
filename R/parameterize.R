@@ -141,8 +141,8 @@ update_coverage_values<- function(site, coverage_data, scenario_name){
   if(scenario_name == 'no-vaccination'){
 
     coverage_data<- coverage_data |>           # pull another projection for data table structure and fill with zeroes
-      filter(.data$country_code == iso3c) |>
-      filter(.data$scenario == 'malaria-r3-r4-default') |>
+      filter(country_code == iso3c) |>
+      filter(scenario == 'malaria-r3-r4-default') |>
       mutate(coverage = 0)  |>
       mutate(scenario = 'no-vaccination')
 
@@ -154,7 +154,7 @@ update_coverage_values<- function(site, coverage_data, scenario_name){
   }
 
   dt<- coverage_data |>
-    rename(vaccine_name = .data$vaccine) |>
+    rename(vaccine_name = vaccine) |>
     data.table()
 
   # add identifying type column for vaccine

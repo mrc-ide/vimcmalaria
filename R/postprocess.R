@@ -91,7 +91,7 @@ expand_life_expectancy<- function(le){
 #' @param vimc_population VIMC population input
 #' @param pop_single_yr VIMC population input (single year age groups)
 #' @export
-vimc_postprocess<- function(output, le, site_data, site_name, ur, vimc_pop, pop_single_yr){
+vimc_postprocess<- function(output, le, iso3c, site_data, site_name, ur, vimc_pop, pop_single_yr){
 
   # fill rates out to single year age groups
   output<- output |>
