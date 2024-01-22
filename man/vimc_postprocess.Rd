@@ -4,12 +4,23 @@
 \alias{vimc_postprocess}
 \title{VIMC postprocessing}
 \usage{
-vimc_postprocess(output, le, site_data, site_name, ur, vimc_pop, pop_single_yr)
+vimc_postprocess(
+  output,
+  le,
+  iso3c,
+  site_data,
+  site_name,
+  ur,
+  vimc_pop,
+  pop_single_yr
+)
 }
 \arguments{
 \item{output}{model output}
 
 \item{le}{VIMC life expectancy input}
+
+\item{iso3c}{countrycode}
 
 \item{site_data}{site file}
 

@@ -85,6 +85,7 @@ expand_life_expectancy<- function(le){
 #' VIMC postprocessing
 #' @param output  model output
 #' @param le VIMC life expectancy input
+#' @param iso3c countrycode
 #' @param site_data site file
 #' @param site_name name of site
 #' @param ur urbanicity

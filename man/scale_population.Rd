@@ -4,7 +4,7 @@
 \alias{scale_population}
 \title{scale site file population to be consistent with country population input from VIMC}
 \usage{
-scale_population(site_data, site_name, ur, vimc_pop, pop_single_yr)
+scale_population(site_data, site_name, ur, iso3c, vimc_pop, pop_single_yr)
 }
 \arguments{
 \item{site_data}{site file}
