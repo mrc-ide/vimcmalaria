@@ -5,7 +5,7 @@
 #' @param scenario vaccine scenario
 #' @returns list of parameters for all model runs
 #' @export
-process_output<- function(model, vimc_input, site_data, site_name, ur, scenario){
+process_output<- function(model, vimc_input, site_data, site_name, ur, iso3c, scenario){
 
   message('postprocessing')
   # calculate rates
@@ -23,7 +23,9 @@ process_output<- function(model, vimc_input, site_data, site_name, ur, scenario)
   dt<- vimc_postprocess(output,
                         le= vimc_input$le_input,
                         site_name= site_name,
-                        ur= ur, site_data,
+                        ur= ur,
+                        iso3c= iso3c,
+                        site_data,
                         vimc_pop= vimc_input$vimc_pop,
                         pop_single_yr= vimc_input$population_input_single_yr)
 
@@ -125,7 +127,7 @@ vimc_postprocess<- function(output, le, site_data, site_name, ur, vimc_pop, pop_
     select(-remaining_yrs)
 
   # scale site population to be consistent with VIMC population ----------------
-  populations<- scale_population(site_data,site_name, ur, vimc_pop, pop_single_yr)
+  populations<- scale_population(site_data,site_name, ur, iso3c, vimc_pop, pop_single_yr)
 
   # merge in site population + prop_n
   dt<- merge(dt, populations$site_population, by= 'year')
@@ -203,28 +205,28 @@ format_outputs<- function(dt, site_name, ur){
 #' @param vimc_pop VIMC population input
 #' @param pop_single_yr single-year age group VIMC population input
 #' @export
-scale_population<- function(site_data, site_name, ur, vimc_pop, pop_single_yr){
+scale_population<- function(site_data, site_name, ur, iso3c, vimc_pop, pop_single_yr){
   # merge in population from site files (as we only have VIMC inputs for the national level)
   # first, separately sum cases by year
   total_pop<- site_data$population |>
-    group_by(year) |>
-    summarise(summed_pop = sum(pop))
+    group_by(.data$year) |>
+    summarise(summed_pop = sum(.data$pop))
 
   # pull the population for the site of interest
   pop <- site_data$population |>
-    filter(name_1 == site_name & urban_rural == ur) |>
-    select(year, pop) |>
-    rename(site_file_population = pop)
+    filter(.data$name_1 == site_name & .data$urban_rural == ur) |>
+    select(.data$year, .data$pop) |>
+    rename(site_file_population = .data$pop)
 
   # merge these two tables together
   pops<- merge(pop, total_pop, by= 'year')
 
   # merge in national population from VIMC (available for entire time period)
   vimc_pop<- vimc_pop |>
-    filter(country_code == iso3c,
-           year >= 2000)|>
-    rename(national_pop = value)|>
-    select(year, national_pop)
+    filter(.data$country_code == iso3c,
+           .data$year >= 2000)|>
+    rename(national_pop = .data$value)|>
+    select(.data$year, .data$national_pop)
 
   # merge in vimc population
   pops<- merge(vimc_pop, pops, all.x = T)
@@ -232,30 +234,30 @@ scale_population<- function(site_data, site_name, ur, vimc_pop, pop_single_yr){
   # first rescale site file population based on the ratio of (sum of site file pops in country)/ (VIMC country level population)
   # should be more or less the same, but should be done for consistency sake
   pops<- pops |>
-    mutate(vimc_site_population = (site_file_population * national_pop)/summed_pop)
+    mutate(vimc_site_population = (.data$site_file_population * .data$national_pop)/.data$summed_pop)
 
   # calculate population ratio as vimc(site)/ vimc(country)
   pops<- pops |>
-    mutate(pop_ratio = vimc_site_population/ national_pop) |>
-    tidyr::fill(pop_ratio, .direction = 'down')
+    mutate(pop_ratio = .data$vimc_site_population/ .data$national_pop) |>
+    tidyr::fill(.data$pop_ratio, .direction = 'down')
 
   # then calculate vimc_site_population by multiplying this ratio to the national population for the final 50 years
   pops<- pops |>
-    mutate(vimc_site_population = ifelse(year<= 2050, vimc_site_population, pop_ratio* national_pop))
+    mutate(vimc_site_population = ifelse(.data$year<= 2050, .data$vimc_site_population, .data$pop_ratio* .data$national_pop))
 
   # subset out site file population for 2000-2100
   site_pop<- pops |>
-    select(year, vimc_site_population)
+    select(.data$year, .data$vimc_site_population)
 
   # pull in single year population to calculate proportion_n by age group
   national_pop<- pops |>
-    select(year, national_pop)
+    select(.data$year, .data$national_pop)
 
   age_proportions<- merge(pop_single_yr, national_pop, by = c('year'))
   age_proportions <- age_proportions |>
-    mutate(prop_n = value/ national_pop) |>
-    select(year, age_from, age_to, prop_n) |>
-    rename(age_lower = age_from)
+    mutate(prop_n = .data$value/ .data$national_pop) |>
+    select(.data$year, .data$age_from, .data$age_to, .data$prop_n) |>
+    rename(age_lower = .data$age_from)
 
   return(list('site_population' = site_pop, 'age_proportions' = age_proportions))
 
