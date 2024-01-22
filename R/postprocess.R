@@ -5,7 +5,7 @@
 #' @param scenario vaccine scenario
 #' @returns list of parameters for all model runs
 #' @export
-process_output<- function(model, le, site_data, vimc_pop, pop_single_yr, site_name, ur, scenario){
+process_output<- function(model, vimc_input, site_data, site_name, ur, scenario){
 
   message('postprocessing')
   # calculate rates
@@ -20,7 +20,12 @@ process_output<- function(model, le, site_data, vimc_pop, pop_single_yr, site_na
     treatment_scaler = 0.517,
   )
 
-  dt<- vimc_postprocess(output, le, site_name= site_name, ur= ur, site_data, vimc_pop, pop_single_yr)
+  dt<- vimc_postprocess(output,
+                        le= vimc_input$le_input,
+                        site_name= site_name,
+                        ur= ur, site_data,
+                        vimc_pop= vimc_input$vimc_pop,
+                        pop_single_yr= vimc_input$population_input_single_yr)
 
 
   # final formatting  ------------------------------------------------------------
@@ -34,7 +39,9 @@ process_output<- function(model, le, site_data, vimc_pop, pop_single_yr, site_na
     doses_per_year<- data.table::data.table()
   }
   ### pull out prevalence
-  prev <- postie::get_prevalence(raw_output, time_divisor = 365, baseline_t = 1999,
+  prev <- postie::get_prevalence(raw_output,
+                                 time_divisor = 365,
+                                 baseline_t = 1999,
                                  age_divisor = 365)
   prev$n_2_10 <- raw_output |>
     mutate(year = floor(timestep/365)) |>
