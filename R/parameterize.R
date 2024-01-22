@@ -141,8 +141,8 @@ update_coverage_values<- function(site, coverage_data, scenario_name){
   if(scenario_name == 'no-vaccination'){
 
     coverage_data<- coverage_data |>           # pull another projection for data table structure and fill with zeroes
-      filter(country_code == iso3c) |>
-      filter(scenario == 'malaria-r3-r4-default') |>
+      filter(.data$country_code == iso3c) |>
+      filter(.data$scenario == 'malaria-r3-r4-default') |>
       mutate(coverage = 0)  |>
       mutate(scenario = 'no-vaccination')
 
@@ -154,11 +154,11 @@ update_coverage_values<- function(site, coverage_data, scenario_name){
   }
 
   dt<- coverage_data |>
-    rename(vaccine_name = vaccine) |>
+    rename(vaccine_name = .data$vaccine) |>
     data.table()
 
   # add identifying type column for vaccine
-  dt[vaccine_name %like% 'RTS', vaccine := 'RTS,S']
+  dt[{{vaccine_name}} %like% 'RTS', vaccine := 'RTS,S']
   dt[is.na(vaccine), vaccine := 'R21']
 
   vaccine_val<- unique(dt$vaccine)
@@ -187,7 +187,7 @@ update_coverage_values<- function(site, coverage_data, scenario_name){
   for (yr in unique(dt$year)){
 
     dt[year== yr & rtss_coverage!= 0 & rtss_booster_coverage!= 0,
-       rtss_booster_coverage := .data$rtss_booster_coverage / dt[year == yr- 1, rtss_coverage]]
+       rtss_booster_coverage := rtss_booster_coverage / dt[year == yr- 1, rtss_coverage]]
 
     dt[year== yr & r21_coverage!= 0 & r21_booster_coverage!= 0,
        r21_booster_coverage := r21_booster_coverage / dt[year == yr- 1, r21_coverage]]
