@@ -4,14 +4,21 @@
 \alias{process_output}
 \title{postprocess model output at the site level}
 \usage{
-process_output(model, site_name, ur, scenario)
+process_output(
+  model,
+  le,
+  site_data,
+  vimc_pop,
+  pop_single_yr,
+  site_name,
+  ur,
+  scenario
+)
 }
 \arguments{
 \item{model}{model output}
 
 \item{site_name}{site name}
-
-\item{ur}{}
 
 \item{scenario}{vaccine scenario}
 }

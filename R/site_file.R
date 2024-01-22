@@ -1,5 +1,5 @@
 #' Check that the sites you seek to model have non-zero EIRs
-#' @param iso3c  Country site file
+#' @param iso3c  Country code
 #' @param sites  sites component of site file
 #' @return sites component of site file with only sites that will be modelled
 #' @export

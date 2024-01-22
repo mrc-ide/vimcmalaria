@@ -7,7 +7,7 @@
 remove_zero_eirs(iso3c, sites)
 }
 \arguments{
-\item{iso3c}{Country site file}
+\item{iso3c}{Country code}
 
 \item{sites}{sites component of site file}
 }
