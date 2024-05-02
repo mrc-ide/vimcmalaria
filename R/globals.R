@@ -70,6 +70,14 @@ utils::globalVariables(
     'rate_dosing',
     'raw_output',
     'remaining_yrs',
-    'rtss_booster_coverage'
+    'rtss_booster_coverage',
+    'prop_severe',
+    'prop_deaths',
+    'life_expectancy',
+    'severe_dw',
+    'case_dw',
+    'gfa',
+    'le_africa',
+    'site_counts'
   )
 )

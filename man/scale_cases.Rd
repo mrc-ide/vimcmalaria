@@ -10,6 +10,8 @@ scale_cases(dt, site_data, scaling_data)
 \item{dt}{case output at country level}
 
 \item{site_data}{site file}
+
+\item{scaling_data}{data used to scale (from no-vaccine scenario)}
 }
 \description{
 scale outputs based on cases from WMR from 2000-2020

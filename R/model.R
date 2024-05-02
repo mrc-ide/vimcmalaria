@@ -23,6 +23,7 @@ run_model<- function(model_input){
            iso = model_input$iso3c,
            description = model_input$description,
            scenario = model_input$scenario,
+           gfa = model_input$gfa,
            parameter_draw = model_input$parameter_draw,
            population = model_input$pop_val,
            burnin = model_input$burnin)

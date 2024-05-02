@@ -3,6 +3,7 @@
 #' @param site_name site name
 #' @param ur urbanicity
 #' @param scenario vaccine scenario
+#' @param gfa global fund assumptions (true or false)
 #' @param vimc_input input file from VIMC
 #' @param description description of reason for model run
 #' @param quick_run quick run setting (boolean)
@@ -10,7 +11,7 @@
 #' @param iso3c country code
 #' @returns list of parameters for all model runs
 #' @export
-process_output<- function(model, vimc_input, site_data, site_name, ur, iso3c, scenario, quick_run, description){
+process_output<- function(model, vimc_input, site_data, site_name, ur, iso3c, scenario, gfa, quick_run, description){
 
   message('postprocessing')
   # calculate rates
@@ -43,6 +44,7 @@ process_output<- function(model, vimc_input, site_data, site_name, ur, iso3c, sc
       site_name = site_name,
       ur = ur,
       scenario = scenario,
+      gfa = gfa,
       description = description)
 
   if(scenario!="no-vaccination") {
@@ -170,8 +172,9 @@ vimc_postprocess<- function(output, le, iso3c, site_data, site_name, ur, vimc_po
 #' @param iso3c country code
 #' @param scenario vaccine scenario
 #' @param description reason for model run
+#' @param gfa global fund assumptions for other interventions (boolean)
 #' @export
-format_outputs<- function(dt, iso3c, site_name, ur, scenario, description){
+format_outputs<- function(dt, iso3c, site_name, ur, scenario, gfa, description){
   dt <- dt |>
     mutate(
       disease = 'Malaria',
@@ -183,6 +186,7 @@ format_outputs<- function(dt, iso3c, site_name, ur, scenario, description){
       site_name = site_name,
       urban_rural = ur,
       scenario = scenario,
+      gfa = gfa,
       description = description
     ) |>
     rename(age = .data$age_lower,
@@ -196,6 +200,7 @@ format_outputs<- function(dt, iso3c, site_name, ur, scenario, description){
       .data$site_name,
       .data$urban_rural,
       .data$scenario,
+      .data$gfa,
        description,
       .data$cohort_size,
       .data$cases,
@@ -376,7 +381,7 @@ pull_low_transmission_sites<- function(iso3c, site_data, processed_sites){
 
   # pull site output for no-vaccination for the low transmission settings
   site_data$prevalence <- site_data$prevalence |>
-    filter(year == 2019) |>
+    dplyr::filter(year == 2019) |>
     mutate(run_model = ifelse(pfpr > 0.10, TRUE, FALSE))
 
   # make exceptions for Madagascar, Ethiopia, and Sudan
@@ -409,7 +414,7 @@ pull_low_transmission_sites<- function(iso3c, site_data, processed_sites){
              ur = urban_rural)
 
     site_info<- prevalence |>
-      filter(iso3c == {{iso3c}},
+      dplyr::filter(iso3c == {{iso3c}},
              run_model == FALSE)
 
 
@@ -419,7 +424,7 @@ pull_low_transmission_sites<- function(iso3c, site_data, processed_sites){
       site <- site_info[i, ]
 
       add <- processed_sites |>
-        filter(site_name == site$site_name & urban_rural == site$ur)
+        dplyr::filter(site_name == site$site_name & urban_rural == site$ur)
 
       append <- rbind(append, add, fill = T)
     }
@@ -439,12 +444,12 @@ append_low_transmission_sites <- function(low_transmission, intvn){
   for(scen in unique(intvn$scenario)){
 
     message(scen)
-    output<- intvn |> filter(scenario == scen)
+    output<- intvn |> dplyr::filter(scenario == scen)
 
     if(scen != 'no-vaccination'){
 
       message('appending')
-      append<- copy(low_transmission)
+      append<- data.table::copy(low_transmission)
 
       append<- append |>
         mutate(scenario = scen)
@@ -469,13 +474,9 @@ append_low_transmission_sites <- function(low_transmission, intvn){
 scale_par<- function(processed_output,
                      iso3c){
 
-
-  pars<- readRDS('J:/VIMC_malaria/postprocessing/par_scaling_vimc.rds')
-  le_africa<- readRDS('J:/VIMC_malaria/postprocessing/le_africa.rds')
-
   print(names(le_africa))
   pars<- pars |>
-    filter(iso3c == {{iso3c}}) |>
+    dplyr::filter(iso3c == {{iso3c}}) |>
     mutate(scaling_ratio = proportion_risk/ model_proportion_risk) |>
     rename(country = iso3c)
 
@@ -483,19 +484,19 @@ scale_par<- function(processed_output,
   processed_output<- merge(processed_output, le_africa, by = 'age')
 
   processed_output<- processed_output |>
-    mutate(cases = cases * scaling_ratio) |>
-    mutate(severe = cases * prop_severe,
-           deaths = cases * prop_deaths)
+    mutate(cases = .data$cases * .data$scaling_ratio) |>
+    mutate(severe = .data$cases * .data$prop_severe,
+           deaths = .data$cases * .data$prop_deaths)
 
 
   # downstream, recalculate ylls + ylds
   processed_output<- processed_output |>
-    mutate(ylls = deaths * life_expectancy,
-           case_dw = ifelse(age <= 5, 0.051, 0.006),
+    mutate(ylls = .data$deaths * .data$life_expectancy,
+           case_dw = ifelse(.data$age <= 5, 0.051, 0.006),
            severe_dw = 0.133) |>
-    mutate(ylds = severe * severe_dw * 0.04795 + cases * case_dw * 0.01375) |>
-    mutate(dalys = ylds + ylls) |>
-    select(-case_dw, -severe_dw)
+    mutate(ylds = .data$severe * .data$severe_dw * 0.04795 + .data$cases * .data$case_dw * 0.01375) |>
+    mutate(dalys = .data$ylds + .data$ylls) |>
+    select(-.data$case_dw, -.data$severe_dw)
 
   return(processed_output)
 }
@@ -505,8 +506,8 @@ scale_par<- function(processed_output,
 #' @export
 add_proportions<- function(dt){
   dt<- dt |>
-    mutate(prop_severe = severe/cases,
-           prop_deaths = deaths/ cases) |>
+    mutate(prop_severe = .data$severe/.data$cases,
+           prop_deaths = .data$deaths/ .data$cases) |>
     mutate(prop_severe = if_else(is.na(.data$prop_severe), 0, prop_severe),
            prop_deaths = if_else(is.na(.data$prop_deaths), 0, prop_deaths))
 
@@ -518,12 +519,13 @@ add_proportions<- function(dt){
 #'   scale outputs based on cases from WMR from 2000-2020
 #' @param dt  case output at country level
 #' @param site_data site file
+#' @param scaling_data data used to scale (from no-vaccine scenario)
 #' @export
 scale_cases<- function(dt, site_data, scaling_data){
 
   pre_scale<- scaling_data |>
-    group_by(year) |>
-    summarise(cases = sum(cases))
+    dplyr::group_by(year) |>
+    dplyr::summarise(cases = sum(cases))
 
   #average site file cases across last three years
   site_file_cases<- data.table::data.table(site_data$cases_deaths[, c('year', 'wmr_cases')])

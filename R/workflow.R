@@ -35,23 +35,30 @@ completed_reports<- function(report_name){
 #'  Make a map of input parameters for VIMC modelling
 #' @param iso3cs  countries to run models for you
 #' @param scenarios  scenarios to run models for. Default is all scenarios for the current round
+#' @param gfa global fund assumptions for coverage of other interventiosn (true or false)
 #' @param description reason for model run
 #' @param parameter_draws draws to run model for
 #' @param quick_run quick run setting (boolean)
 #' @export
 make_parameter_map<- function(iso3cs,
                               scenarios =  c('no-vaccination',
-                                             'malaria-rts3-bluesky',
-                                             'malaria-rts3-default',
+                                             'malaria-r3_bluesky',
+                                             'malaria-r3_default',
+                                             'malaria-r3_r4_bluesky',
+                                             'malaria-r3_r4_default',
+                                             'malaria-rts3_bluesky',
+                                             'malaria-rts3_default',
                                              'malaria-rts3-rts4-bluesky',
                                              'malaria-rts3-rts4-default'),
+                              gfa,
                               description,
                               parameter_draws,
                               quick_run){
 
   country_map<- data.table('iso3c' = iso3cs) |>
     mutate(description = description,
-           quick_run = quick_run)
+           quick_run = quick_run,
+           gfa= gfa)
 
   full_map<- data.table()
 
@@ -162,7 +169,8 @@ submit_by_core<- function(core, dt){
                         description = description,
                         quick_run = quick_run,
                         scenario = scenario,
-                        parameter_draw = parameter_draw)),
+                        parameter_draw = parameter_draw,
+                        gfa= gfa)),
     dt,
     resources = hipercow::hipercow_resources(cores = unique(dt$site_number)))
 
@@ -177,12 +185,12 @@ submit_by_core<- function(core, dt){
 #' @export
 pull_most_recent_output<- function(iso3c, description, quick_run){
   completed<- completed_reports('process_country') |>
-    filter(iso3c == {{iso3c}},
+    dplyr::filter(iso3c == {{iso3c}},
            description == {{description}},
            quick_run == {{quick_run}}) |>
-    arrange(desc(date_time)) |>
-    dplyr::distinct(iso3c, scenario, quick_run, parameter_draw, description, .keep_all = TRUE) |>
-    arrange(iso3c, scenario, parameter_draw)
+    dplyr::arrange(dplyr::desc(date_time)) |>
+    dplyr::distinct(iso3c, scenario, quick_run, parameter_draw, description, gfa, .keep_all = TRUE) |>
+    dplyr::arrange(iso3c, scenario, parameter_draw)
 
 
   return(completed)
@@ -204,7 +212,7 @@ get_site_output<- function(index, map, output_filepath){
   message(directory)
 
   output<- readRDS(paste0(output_filepath, directory, '/outputs.rds'))                  # get output file
-  sites<- rbindlist(lapply(output$site_output, function(x) return(x$processed_output))) #pull out processed site_level output
+  sites<- data.table::rbindlist(lapply(output$site_output, function(x) return(x$processed_output))) #pull out processed site_level output
   sites<- sites |>
     mutate(parameter_draw = draw)
   return(sites)

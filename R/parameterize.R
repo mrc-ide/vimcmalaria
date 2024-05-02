@@ -7,6 +7,7 @@
 #' @param   site_data        site file
 #' @param   coverage_data    VIMC vaccine forecast for site of interest
 #' @param   scenario         vaccine forecast scenario
+#' @param   gfa              global fund assumptions for other intervention coverage
 #' @param   parameter_draw   parameter draw value
 #' @param   quick_run        quick_run setting (boolean)
 #' @param   iso3c            country code
@@ -18,6 +19,7 @@ pull_input_params<- function(site_name,
                              site_data,
                              coverage_data,
                              scenario,
+                             gfa,
                              parameter_draw,
                              quick_run){
 
@@ -70,6 +72,7 @@ pull_input_params<- function(site_name,
     'ur' = ur,
     'iso' = iso3c,
     'scenario' = scenario,
+    'gfa' = gfa,
     'parameter_draw' = parameter_draw,
     'pop_val' = run_params$pop_val,
     'burnin' =  run_params$burnin
@@ -141,22 +144,12 @@ parameterize_stochastic_run<- function(params, parameter_draw){
 #' @export
 update_coverage_values<- function(site, iso3c, coverage_data, scenario_name){
 
-  if(scenario_name == 'no-vaccination'){
+  coverage_data <- coverage_data |>
+    dplyr::filter(country_code == iso3c) |>
+    dplyr::filter(scenario == scenario_name)
 
-    coverage_data<- coverage_data |>           # pull another projection for data table structure and fill with zeroes
-      dplyr::filter(country_code == iso3c) |>
-      dplyr::filter(scenario == 'malaria-rts3-rts4-default') |>
-      mutate(coverage = 0)  |>
-      mutate(scenario = 'no-vaccination')
 
-  }else{
-
-    coverage_data<- coverage_data |>
-      dplyr::filter(country_code == iso3c) |>
-      dplyr::filter(scenario == scenario_name)
-  }
-
-  dt<- coverage_data |>
+  dt <- coverage_data |>
     rename(vaccine_name = vaccine) |>
     data.table()
 

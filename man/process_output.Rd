@@ -12,6 +12,7 @@ process_output(
   ur,
   iso3c,
   scenario,
+  gfa,
   quick_run,
   description
 )
@@ -30,6 +31,8 @@ process_output(
 \item{iso3c}{country code}
 
 \item{scenario}{vaccine scenario}
+
+\item{gfa}{global fund assumptions (true or false)}
 
 \item{quick_run}{quick run setting (boolean)}
 

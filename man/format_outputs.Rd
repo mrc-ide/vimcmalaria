@@ -4,7 +4,7 @@
 \alias{format_outputs}
 \title{format outputs for submission}
 \usage{
-format_outputs(dt, iso3c, site_name, ur, scenario, description)
+format_outputs(dt, iso3c, site_name, ur, scenario, gfa, description)
 }
 \arguments{
 \item{dt}{postprocessed output}
@@ -16,6 +16,8 @@ format_outputs(dt, iso3c, site_name, ur, scenario, description)
 \item{ur}{urbanicity}
 
 \item{scenario}{vaccine scenario}
+
+\item{gfa}{global fund assumptions for other interventions (boolean)}
 
 \item{description}{reason for model run}
 }
