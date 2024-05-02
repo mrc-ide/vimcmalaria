@@ -7,6 +7,7 @@
 pull_input_params(
   site_name,
   ur,
+  iso3c,
   site_data,
   coverage_data,
   scenario,
@@ -18,6 +19,8 @@ pull_input_params(
 \item{site_name}{name of site}
 
 \item{ur}{urbanicity, urban or rural}
+
+\item{iso3c}{country code}
 
 \item{site_data}{site file}
 

@@ -4,10 +4,12 @@
 \alias{expand_life_expectancy}
 \title{expand VIMC life expectancy data frame to single yea}
 \usage{
-expand_life_expectancy(le)
+expand_life_expectancy(le, iso3c)
 }
 \arguments{
 \item{le}{VIMC life expectacy input}
+
+\item{iso3c}{country code}
 }
 \description{
 expand VIMC life expectancy data frame to single yea

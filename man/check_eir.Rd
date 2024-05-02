@@ -8,8 +8,6 @@ check_eir(site)
 }
 \arguments{
 \item{site}{site file}
-
-\item{iso3c}{Country code}
 }
 \value{
 sites component of site file with only sites that will be modelled

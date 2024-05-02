@@ -4,14 +4,20 @@
 \alias{format_outputs}
 \title{format outputs for submission}
 \usage{
-format_outputs(dt, site_name, ur)
+format_outputs(dt, iso3c, site_name, ur, scenario, description)
 }
 \arguments{
 \item{dt}{postprocessed output}
 
+\item{iso3c}{country code}
+
 \item{site_name}{name of site}
 
 \item{ur}{urbanicity}
+
+\item{scenario}{vaccine scenario}
+
+\item{description}{reason for model run}
 }
 \description{
 format outputs for submission

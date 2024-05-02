@@ -4,10 +4,12 @@
 \alias{update_coverage_values}
 \title{update vaccine coverage based on VIMC inputs from Montagu}
 \usage{
-update_coverage_values(site, coverage_data, scenario_name)
+update_coverage_values(site, iso3c, coverage_data, scenario_name)
 }
 \arguments{
 \item{site}{site data file}
+
+\item{iso3c}{country to update coverage values for}
 
 \item{coverage_data}{VIMC vaccine forecast for site of interest}
 

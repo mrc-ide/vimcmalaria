@@ -4,7 +4,7 @@
 #' @return sites component of site file with only sites that will be modelled
 #' @export
 remove_zero_eirs<- function(iso3c, sites){
-  eirs<- sites$eir  # sites for country of interest
+  eirs<- data.table::data.table(sites$eir)  # sites for country of interest
   eirs<- eirs[eirs$spp == 'pf' & eirs$eir == 0, ]
   remove<- eirs[, c('name_1', 'urban_rural')]
 
@@ -17,11 +17,10 @@ remove_zero_eirs<- function(iso3c, sites){
   } else{
     message('No zero eir sites to remove')
   }
-  return(sites)
+  return(site)
 }
 
 #' Check that the EIR of the site of interest is not zero
-#' @param iso3c  Country code
 #' @param site   site file
 #' @return sites component of site file with only sites that will be modelled
 #' @export
@@ -36,12 +35,12 @@ check_eir<- function(site){
 #' Extract a single site input from a country site file
 #' @param site_file  Country site file
 #' @param site_name  name of site to extract
-#' @param urbanicity urbanicity of site to extract
+#' @param ur urbanicity of site to extract
 #' @return Single site
 #' @export
 extract_site <- function(site_file, site_name, ur){
 
-  sites<- data.table(site_file$sites)
+  sites<- data.table::data.table(site_file$sites)
   Encoding(sites$name_1) <- "UTF-8"
 
   sites$name_1<- iconv(sites$name_1, from="UTF-8", to="ASCII//TRANSLIT")

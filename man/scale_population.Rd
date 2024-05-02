@@ -13,6 +13,8 @@ scale_population(site_data, site_name, ur, iso3c, vimc_pop, pop_single_yr)
 
 \item{ur}{urbanicity}
 
+\item{iso3c}{country of interest}
+
 \item{vimc_pop}{VIMC population input}
 
 \item{pop_single_yr}{single-year age group VIMC population input}

@@ -11,7 +11,7 @@ extract_site(site_file, site_name, ur)
 
 \item{site_name}{name of site to extract}
 
-\item{urbanicity}{urbanicity of site to extract}
+\item{ur}{urbanicity of site to extract}
 }
 \value{
 Single site

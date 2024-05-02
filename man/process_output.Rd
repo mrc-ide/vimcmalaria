@@ -4,14 +4,36 @@
 \alias{process_output}
 \title{postprocess model output at the site level}
 \usage{
-process_output(model, vimc_input, site_data, site_name, ur, iso3c, scenario)
+process_output(
+  model,
+  vimc_input,
+  site_data,
+  site_name,
+  ur,
+  iso3c,
+  scenario,
+  quick_run,
+  description
+)
 }
 \arguments{
 \item{model}{model output}
 
+\item{vimc_input}{input file from VIMC}
+
+\item{site_data}{site file for country of interest}
+
 \item{site_name}{site name}
 
+\item{ur}{urbanicity}
+
+\item{iso3c}{country code}
+
 \item{scenario}{vaccine scenario}
+
+\item{quick_run}{quick run setting (boolean)}
+
+\item{description}{description of reason for model run}
 }
 \value{
 list of parameters for all model runs

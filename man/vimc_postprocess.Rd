@@ -12,7 +12,8 @@ vimc_postprocess(
   site_name,
   ur,
   vimc_pop,
-  pop_single_yr
+  pop_single_yr,
+  quick_run
 )
 }
 \arguments{
@@ -28,9 +29,11 @@ vimc_postprocess(
 
 \item{ur}{urbanicity}
 
+\item{vimc_pop}{VIMC population input for country of interest}
+
 \item{pop_single_yr}{VIMC population input (single year age groups)}
 
-\item{vimc_population}{VIMC population input}
+\item{quick_run}{quick_run}
 }
 \description{
 VIMC postprocessing

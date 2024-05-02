@@ -4,25 +4,29 @@
 #' @export
 run_model<- function(model_input){
   message('running the model')
-  
+
   params <- model_input$param_list
   params$progress_bar <- TRUE
-  timesteps <<- model_input$param_list$timesteps
-  
-  model <- malariasimulation::run_simulation(timesteps = params$timesteps,
-                                             parameters = params)
-  
+
+  model <- retry::retry(
+    malariasimulation::run_simulation(timesteps = params$timesteps,
+                                      parameters = params),
+    max_tries = 5,
+    when = 'error reading from connection|embedded nul|unknown type',
+    interval = 3
+  )
+
   # add identifying information to output
   model <- model |>
     mutate(site_name = model_input$site_name,
            urban_rural = model_input$ur,
            iso = model_input$iso3c,
-           description = model_input$description, 
+           description = model_input$description,
            scenario = model_input$scenario,
            parameter_draw = model_input$parameter_draw,
            population = model_input$pop_val,
            burnin = model_input$burnin)
-  
+
   # save model runs somewhere
   message('saving the model')
   return(model)
