@@ -8,6 +8,8 @@ run_model<- function(model_input){
   params <- model_input$param_list
   params$progress_bar <- TRUE
 
+  set.seed(56)
+
   model <- retry::retry(
     malariasimulation::run_simulation(timesteps = params$timesteps,
                                       parameters = params),
