@@ -13,6 +13,7 @@ process_output(
   iso3c,
   scenario,
   gfa,
+  parameter_draw,
   quick_run,
   description
 )
@@ -33,6 +34,8 @@ process_output(
 \item{scenario}{vaccine scenario}
 
 \item{gfa}{global fund assumptions (true or false)}
+
+\item{parameter_draw}{parameter draw}
 
 \item{quick_run}{quick run setting (boolean)}
 

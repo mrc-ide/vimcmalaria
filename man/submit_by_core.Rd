@@ -4,12 +4,14 @@
 \alias{submit_by_core}
 \title{Submit jobs by core}
 \usage{
-submit_by_core(core, dt)
+submit_by_core(core, dt, test = FALSE)
 }
 \arguments{
 \item{core}{number of cores to request for job}
 
 \item{dt}{parameter map for reports}
+
+\item{test}{if test is true, do not request additional cores-- just to see if models complete}
 }
 \description{
 Submit jobs by core

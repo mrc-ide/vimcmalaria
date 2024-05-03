@@ -42,12 +42,12 @@ completed_reports<- function(report_name){
 #' @export
 make_parameter_map<- function(iso3cs,
                               scenarios =  c('no-vaccination',
-                                             'malaria-r3_bluesky',
-                                             'malaria-r3_default',
-                                             'malaria-r3_r4_bluesky',
-                                             'malaria-r3_r4_default',
-                                             'malaria-rts3_bluesky',
-                                             'malaria-rts3_default',
+                                             'malaria-r3-bluesky',
+                                             'malaria-r3-default',
+                                             'malaria-r3-r4_bluesky',
+                                             'malaria-r3-r4-default',
+                                             'malaria-rts3-bluesky',
+                                             'malaria-rts3-default',
                                              'malaria-rts3-rts4-bluesky',
                                              'malaria-rts3-rts4-default'),
                               gfa,
@@ -64,10 +64,14 @@ make_parameter_map<- function(iso3cs,
 
   for (scen in scenarios){
     for (draw in parameter_draws){
+      for(gfas in gfa){
+        subset<- country_map|>
+          mutate(scenario = scen,
+                 parameter_draw = draw,
+                 gfa = gfas)
 
-      subset<- country_map|>
-        mutate(scenario = scen,
-               parameter_draw = draw)
+      }
+
 
       full_map<- rbind(subset, full_map)
     }}
@@ -154,25 +158,44 @@ run_local_reports<- function(map, report_name){
 #' Submit jobs by core
 #' @param core number of cores to request for job
 #' @param dt   parameter map for reports
+#' @param test if test is true, do not request additional cores-- just to see if models complete
 #' @export
-submit_by_core<- function(core, dt){
+submit_by_core<- function(core, dt, test= FALSE){
 
   dt<- dt |>
     dplyr::filter(site_number == core)
 
   message(unique(dt$site_number))
 
-  hipercow::task_create_bulk_expr(
-    orderly2::orderly_run(
-      "process_country",
-      parameters = list(iso3c = iso3c,
-                        description = description,
-                        quick_run = quick_run,
-                        scenario = scenario,
-                        parameter_draw = parameter_draw,
-                        gfa= gfa)),
-    dt,
-    resources = hipercow::hipercow_resources(cores = unique(dt$site_number)))
+  if(test == TRUE){
+    dt <- dt |> select(-site_number)
+
+    hipercow::task_create_bulk_expr(
+      orderly2::orderly_run(
+        "process_country",
+        parameters = list(iso3c = iso3c,
+                          description = description,
+                          quick_run = quick_run,
+                          scenario = scenario,
+                          parameter_draw = parameter_draw,
+                          gfa= gfa)),
+      dt)
+
+  }else{
+
+    hipercow::task_create_bulk_expr(
+      orderly2::orderly_run(
+        "process_country",
+        parameters = list(iso3c = iso3c,
+                          description = description,
+                          quick_run = quick_run,
+                          scenario = scenario,
+                          parameter_draw = parameter_draw,
+                          gfa= gfa)),
+      dt,
+      resources = hipercow::hipercow_resources(cores = unique(dt$site_number)))
+
+  }
 
   message('submitted')
 }
@@ -241,4 +264,6 @@ get_dose_output<- function(index, map, output_filepath){
 
   return(output)
 }
+
+
 

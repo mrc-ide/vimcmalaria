@@ -1,4 +1,9 @@
-
+#' model vaccine impact
+#' @param site   analysis map with input parameters
+#' @param site_data site data
+#' @param vimc_input vimc_input
+#' @returns modelled + processed output
+#' @export
 analyse_site<- function(site,
                         site_data,
                         vimc_input){
@@ -10,6 +15,7 @@ analyse_site<- function(site,
                                   scenario = site$scenario,
                                   iso3c = site$iso3c,
                                   parameter_draw = site$parameter_draw,
+                                  gfa = site$gfa,
                                   quick_run = site$quick_run)
   model<- run_model(model_input)
   output<- process_output(model,
@@ -19,13 +25,20 @@ analyse_site<- function(site,
                           ur = site$ur,
                           iso3c = site$iso3c,
                           scenario = site$scenario,
+                          parameter_draw = site$parameter_draw,
+                          gfa = site$gfa,
                           quick_run = site$quick_run,
                           description= site$description)
 
   return(output)
 }
 
-
+#' make an analysis map of input parameters for vaccine modelling run
+#' @param site_df   analysis map with input parameters
+#' @param site_data site data
+#' @param test      boolean-- if true, only run analysis for two test sites. Good for quick tests of code functionality
+#' @returns analysis map to be used as an input for analyse_site
+#' @export
 make_analysis_map<- function(site_df,
                              site_data,
                              test){
@@ -88,7 +101,8 @@ make_analysis_map<- function(site_df,
   site_info<- site_info |>
     mutate(scenario = {{scenario}},
            quick_run = {{quick_run}},
-           parameter_draw = {{parameter_draw}})
+           parameter_draw = {{parameter_draw}},
+           gfa = {{gfa}})
 
 
   Encoding(site_info$site_name) <- "UTF-8"

@@ -4,7 +4,16 @@
 \alias{format_outputs}
 \title{format outputs for submission}
 \usage{
-format_outputs(dt, iso3c, site_name, ur, scenario, gfa, description)
+format_outputs(
+  dt,
+  iso3c,
+  site_name,
+  ur,
+  scenario,
+  gfa,
+  description,
+  parameter_draw
+)
 }
 \arguments{
 \item{dt}{postprocessed output}
@@ -20,6 +29,8 @@ format_outputs(dt, iso3c, site_name, ur, scenario, gfa, description)
 \item{gfa}{global fund assumptions for other interventions (boolean)}
 
 \item{description}{reason for model run}
+
+\item{parameter_draw}{parameter draw}
 }
 \description{
 format outputs for submission

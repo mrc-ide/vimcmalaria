@@ -8,10 +8,11 @@
 #' @param description description of reason for model run
 #' @param quick_run quick run setting (boolean)
 #' @param site_data site file for country of interest
+#' @param parameter_draw parameter draw
 #' @param iso3c country code
 #' @returns list of parameters for all model runs
 #' @export
-process_output<- function(model, vimc_input, site_data, site_name, ur, iso3c, scenario, gfa, quick_run, description){
+process_output<- function(model, vimc_input, site_data, site_name, ur, iso3c, scenario, gfa, parameter_draw, quick_run, description){
 
   message('postprocessing')
   # calculate rates
@@ -45,7 +46,8 @@ process_output<- function(model, vimc_input, site_data, site_name, ur, iso3c, sc
       ur = ur,
       scenario = scenario,
       gfa = gfa,
-      description = description)
+      description = description,
+      parameter_draw = parameter_draw)
 
   if(scenario!="no-vaccination") {
 
@@ -173,8 +175,9 @@ vimc_postprocess<- function(output, le, iso3c, site_data, site_name, ur, vimc_po
 #' @param scenario vaccine scenario
 #' @param description reason for model run
 #' @param gfa global fund assumptions for other interventions (boolean)
+#' @param parameter_draw parameter draw
 #' @export
-format_outputs<- function(dt, iso3c, site_name, ur, scenario, gfa, description){
+format_outputs<- function(dt, iso3c, site_name, ur, scenario, gfa, description, parameter_draw){
   dt <- dt |>
     mutate(
       disease = 'Malaria',
@@ -187,7 +190,8 @@ format_outputs<- function(dt, iso3c, site_name, ur, scenario, gfa, description){
       urban_rural = ur,
       scenario = scenario,
       gfa = gfa,
-      description = description
+      description = description,
+      parameter_draw = parameter_draw
     ) |>
     rename(age = .data$age_lower,
            cohort_size = .data$population) |>
@@ -201,7 +205,8 @@ format_outputs<- function(dt, iso3c, site_name, ur, scenario, gfa, description){
       .data$urban_rural,
       .data$scenario,
       .data$gfa,
-       description,
+      description,
+      .data$parameter_draw,
       .data$cohort_size,
       .data$cases,
       .data$severe,
