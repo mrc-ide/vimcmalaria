@@ -35,6 +35,11 @@ aggregate_outputs<- function(dt, pop){
   return(dt)
 }
 
+
+#' Aggregate dose outputs
+#' @param   doses_full     dose input
+#' @returns aggregated dose output
+#' @export
 aggregate_doses<- function(doses_full){
   doses_per_year <- doses_full |>
     dplyr::group_by(year) |>
