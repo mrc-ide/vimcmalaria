@@ -7,7 +7,7 @@
 make_parameter_map(
   iso3cs,
   scenarios = c("no-vaccination", "malaria-r3-bluesky", "malaria-r3-default",
-    "malaria-r3-r4_bluesky", "malaria-r3-r4-default", "malaria-rts3-bluesky",
+    "malaria-r3-r4-bluesky", "malaria-r3-r4-default", "malaria-rts3-bluesky",
     "malaria-rts3-default", "malaria-rts3-rts4-bluesky", "malaria-rts3-rts4-default"),
   gfa,
   description,

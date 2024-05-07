@@ -115,7 +115,7 @@ check_reports_completed<- function(report_name, map, date_time){
 check_not_a_rerun<- function(report_name, map, date_time){
 
   site_counts<- map |>
-    select(scenario, iso3c, site_number)
+    select(scenario, iso3c, site_number, gfa)
   site_counts<- unique(site_counts)
   map<- map |> select(-site_number)
 
@@ -126,7 +126,7 @@ check_not_a_rerun<- function(report_name, map, date_time){
     select(-date_time)
 
   different<- setdiff(map, completed)
-  different<- merge(different, site_counts, by = c('scenario', 'iso3c'))
+  different<- merge(different, site_counts, by = c('scenario', 'iso3c', 'gfa'))
 
   return(different)
 
