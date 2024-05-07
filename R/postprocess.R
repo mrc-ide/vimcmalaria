@@ -555,7 +555,7 @@ scale_cases<- function(dt, site_data, scaling_data){
     mutate(clinical= cases/cohort_size,
            mortality = deaths/ cohort_size,
            dalys_pp = dalys/ cohort_size) |>
-    select(-site_name, -urban_rural)
+    select(-urban_rural)
 
   return(dt)
 }
