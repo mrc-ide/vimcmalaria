@@ -64,7 +64,7 @@ pull_input_params<- function(site_name,
 
   # if this is a stochastic run, set parameter draw ------------------------------
   params<- parameterize_stochastic_run(params, parameter_draw)
-
+  params$pev<- TRUE
 
   inputs <- list(
     'param_list' = params,
