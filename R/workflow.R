@@ -206,8 +206,8 @@ submit_by_core<- function(core, dt, test= FALSE){
 #' @param description   reason for model run
 #' @param quick_run     quick run setting
 #' @export
-pull_most_recent_output<- function(iso3c, description, quick_run){
-  completed<- completed_reports('process_country') |>
+pull_most_recent_output<- function(iso3c, report_name, description, quick_run){
+  completed<- completed_reports('postprocessing') |>
     dplyr::filter(iso3c == {{iso3c}},
            description == {{description}},
            quick_run == {{quick_run}}) |>
@@ -218,6 +218,7 @@ pull_most_recent_output<- function(iso3c, description, quick_run){
 
   return(completed)
 }
+
 
 
 #' Pull site level processed output based on metadata input
