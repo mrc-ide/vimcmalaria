@@ -17,6 +17,15 @@ process_output<- function(model, vimc_input, site_data, site_name, ur, iso3c, sc
   message('postprocessing')
   # calculate rates
   raw_output<- drop_burnin(model, burnin= unique(model$burnin)* 365)
+  raw_output<- raw_output |>
+    mutate( iso3c = iso3c,
+            site_name = site_name,
+            ur = ur,
+            scenario = scenario,
+            gfa = gfa,
+            description = description,
+            parameter_draw = parameter_draw)
+
 
   output <- postie::get_rates(
     raw_output,
@@ -49,27 +58,7 @@ process_output<- function(model, vimc_input, site_data, site_name, ur, iso3c, sc
       description = description,
       parameter_draw = parameter_draw)
 
-  if(scenario!="no-vaccination") {
-
-    doses_per_year <- pull_doses_output(raw_output, output)
-
-  } else{
-    doses_per_year<- data.table::data.table()
-  }
-  ### pull out prevalence
-  prev <- postie::get_prevalence(raw_output,
-                                 time_divisor = 365,
-                                 baseline_t = 1999,
-                                 age_divisor = 365)
-  prev$n_2_10 <- raw_output |>
-    mutate(year = floor(timestep/365)) |>
-    dplyr::group_by(year) |>
-    dplyr::summarise(n_2_10 = mean(n_730_3649)) |>
-    dplyr::filter(year != max(year)) |>
-    dplyr::pull(n_2_10)
-
-
-  return(list('processed_output' = output, 'doses' = doses_per_year, 'prevalence' = prev))
+  return(list('processed_output' = output, 'raw_output' = raw_output))
 }
 
 #' expand VIMC life expectancy data frame to single yea
