@@ -350,18 +350,15 @@ reformat_output<- function(output){
     subset<- output[[item]]
 
     processed<- subset$processed_output
-    doses<- subset$doses
-    prev<- subset$prevalence
+    raw<- subset$raw_output
 
     processed_results<- rbind(processed, processed_results, fill =T)
-    doses_full<- rbind(doses, doses_full, fill= T)
-    prev_full<- rbind(prev, prev_full, fill = T)
+    raw_full<- rbind(raw, raw_output, fill= T)
 
   }
 
   return(list('processed_full' = processed_results,
-              'doses_full' = doses_full,
-              'prev_full' = prev_full))
+              'raw_full' = raw_full))
 
 }
 
