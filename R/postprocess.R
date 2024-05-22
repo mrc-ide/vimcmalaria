@@ -342,8 +342,7 @@ pull_doses_output <- function(raw_output, processed_output) {
 reformat_output<- function(output){
 
   processed_results<- data.table()
-  doses_full<- data.table()
-  prev_full<- data.table()
+  raw_results<- data.table()
 
   for(item in c(1:length(output))){
 
@@ -353,7 +352,7 @@ reformat_output<- function(output){
     raw<- subset$raw_output
 
     processed_results<- rbind(processed, processed_results, fill =T)
-    raw_full<- rbind(raw, raw_output, fill= T)
+    raw_results<- rbind(raw, raw_results, fill= T)
 
   }
 
