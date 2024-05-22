@@ -357,7 +357,7 @@ reformat_output<- function(output){
   }
 
   return(list('processed_full' = processed_results,
-              'raw_full' = raw_full))
+              'raw_full' = raw_results))
 
 }
 
