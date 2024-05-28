@@ -352,7 +352,7 @@ reformat_output<- function(output){
     raw<- subset$raw_output
 
     processed_results<- rbind(processed, processed_results, fill =T)
-    raw_results<- rbind(raw, raw_results, fill= T)
+    raw_results<- dplyr::bind_rows(raw, raw_results)
 
   }
 
