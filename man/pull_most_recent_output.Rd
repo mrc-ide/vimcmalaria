@@ -4,7 +4,7 @@
 \alias{pull_most_recent_output}
 \title{Pull metadata from process country report}
 \usage{
-pull_most_recent_output(iso3c, report_name, description, quick_run)
+pull_most_recent_output(iso3c, description, quick_run)
 }
 \arguments{
 \item{iso3c}{country code}
