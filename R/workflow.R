@@ -265,22 +265,21 @@ get_site_output<- function(index, map, output_filepath){
 #' @param map             metadata df
 #' @param output_filepath filepath where outputs live
 #' @export
-get_dose_output<- function(index, map, output_filepath){
+get_raw_output<- function(index, map, output_filepath){
 
   metadata<- map[ index,]
 
   directory<- metadata$directory_name
-  scenario<- metadata$scenario
   draw<- metadata$parameter_draw
 
   message(directory)
 
-  output<- readRDS(paste0(output_filepath, directory, '/outputs.rds'))             # get output file
-  output<- output$doses|>
-    mutate(parameter_draw = draw,
-           scenario = scenario)
+  output<- readRDS(paste0(output_filepath, directory, '/outputs.rds'))                  # get output file
+  sites<- dplyr::bind_rows(lapply(output$site_output, function(x) return(x$raw_output))) #pull out processed site_level output
+  sites<- sites |>
+    mutate(parameter_draw = draw)
+  return(sites)
 
-  return(output)
 }
 
 

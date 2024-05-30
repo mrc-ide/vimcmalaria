@@ -544,3 +544,33 @@ scale_cases<- function(dt, site_data, scaling_data){
 
   return(dt)
 }
+
+
+#' postprocess model output at the site level
+#' @param dt   raw model output
+#' @param id identifier for unique site unit-- typically some combination of site name and urbanicity
+#' @returns postprocessed output at the site level
+#' @export
+site_postprocessing<- function(id, dt){
+
+  message(paste0('postprocessing', id))
+  sub<- dt |> filter(site == id)
+
+  # calculate rates
+  raw_output<- drop_burnin(sub, burnin= 15 * 365)
+
+  output <- postie::get_rates(
+    raw_output,
+    time_divisor = 365,
+    baseline_t = 1999,
+    age_divisor = 365,
+    scaler = 0.215,
+    treatment_scaler = 0.517,
+  )
+
+  output<- output |>
+  mutate(site = id,
+         site_ur = unique(raw_output$site_ur))
+
+  return(output)
+}
