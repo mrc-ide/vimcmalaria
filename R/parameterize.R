@@ -54,6 +54,11 @@ pull_input_params<- function(site_name,
     overrides = list(human_population = run_params$pop_val)
   )
 
+  if(iso3c == 'ETH'){
+
+    params<- recalibrate(params, site_name= site_name)
+
+  }
   # set age groups
   params$clinical_incidence_rendering_min_ages = run_params$min_ages
   params$clinical_incidence_rendering_max_ages = run_params$max_ages
@@ -243,3 +248,49 @@ expand_intervention_coverage<- function(site, terminal_year){
   return(site)
 }
 
+#' Very basic recalibration function (for Ethiopia sites)
+#' @param   params           simulation parameters
+#' @param   site_name        name of site to recalibrate
+#' @returns recalibrated site
+#' @export
+recalibrate<- function(params, site_name){
+
+
+  summary_mean_pfpr_2_10 <- function (x) {
+    message('calibrating')
+    x<- data.table(x)
+    # Calculate the PfPR2-10:
+    prev_2_10 <- mean(x[timestep %in% c((10*365):(11*365))]$n_detect_pcr_730_3649/x[timestep %in% c((10*365):(11* 365))]$n_730_3649) # average over a year
+
+    # Return the calculated PfPR2-10:
+    return(prev_2_10)
+  }
+
+  # pull target pfpr from 2010 for corresponding site
+  target_pfpr <- site_data$prevalence |> filter(year == 2010, name_1 == site_name) |> pull(pfpr)
+
+  print(paste0('target pfpr ', target_pfpr ))
+
+  # Add a parameter to the parameter list specifying the number of timesteps
+  simparams<- copy(params)
+  simparams$timesteps <- 12 * 365
+
+  # Establish a tolerance value:
+  pfpr_tolerance <- 0.01
+
+  # Set upper and lower EIR bounds for the calibrate function to check
+  lower_EIR <- 0.01; upper_EIR <- 60
+
+  # Run the calibrate() function:
+  cali_EIR <- calibrate(target = target_pfpr,
+                        summary_function = summary_mean_pfpr_2_10,
+                        parameters = simparams,
+                        tolerance = pfpr_tolerance,
+                        low = lower_EIR, high = upper_EIR)
+
+  print(paste0('calibrated EIR for site ', site_name, ' :', cali_EIR))
+
+  params<- set_equilibrium(params, init_EIR = cali_EIR)
+
+  return(params)
+}
