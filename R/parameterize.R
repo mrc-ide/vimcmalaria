@@ -285,7 +285,7 @@ recalibrate<- function(params, site_name, site_dt){
   lower_EIR <- 0.01; upper_EIR <- 60
 
   # Run the calibrate() function:
-  cali_EIR <- calibrate(target = target_pfpr,
+  cali_EIR <- cali::calibrate(target = target_pfpr,
                         summary_function = summary_mean_pfpr_2_10,
                         parameters = simparams,
                         tolerance = pfpr_tolerance,
