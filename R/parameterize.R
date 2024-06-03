@@ -268,7 +268,7 @@ recalibrate<- function(params, site_name, site_data){
   }
 
   # pull target pfpr from 2010 for corresponding site
-  target_pfpr <- site_data$prevalence |> filter(year == 2010, name_1 == site_name) |> pull(pfpr)
+  target_pfpr <- site_data$prevalence |> dplyr::filter(year == 2010, name_1 == site_name) |> dplyr::pull(pfpr)
 
   print(paste0('target pfpr ', target_pfpr ))
 

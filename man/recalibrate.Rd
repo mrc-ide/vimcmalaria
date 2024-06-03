@@ -4,12 +4,14 @@
 \alias{recalibrate}
 \title{Very basic recalibration function (for Ethiopia sites)}
 \usage{
-recalibrate(params, site_name)
+recalibrate(params, site_name, site_data)
 }
 \arguments{
 \item{params}{simulation parameters}
 
 \item{site_name}{name of site to recalibrate}
+
+\item{site_data}{site data}
 }
 \value{
 recalibrated site
