@@ -56,7 +56,7 @@ pull_input_params<- function(site_name,
 
   if(iso3c == 'ETH'){
 
-    params<- recalibrate(params, site_name= site_name)
+    params<- recalibrate(params, site_name= site_name, site_data = site_data)
 
   }
   # set age groups
@@ -251,9 +251,10 @@ expand_intervention_coverage<- function(site, terminal_year){
 #' Very basic recalibration function (for Ethiopia sites)
 #' @param   params           simulation parameters
 #' @param   site_name        name of site to recalibrate
+#' @param site_data site data
 #' @returns recalibrated site
 #' @export
-recalibrate<- function(params, site_name){
+recalibrate<- function(params, site_name, site_data){
 
 
   summary_mean_pfpr_2_10 <- function (x) {
