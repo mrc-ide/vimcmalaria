@@ -515,19 +515,18 @@ scale_cases<- function(dt, site_data, scaling_data){
 
   pre_scale<- scaling_data |>
     dplyr::group_by(year) |>
-    dplyr::summarise(cases = sum(cases))
+    dplyr::summarise(cases = sum(cases)) |>
+    dplyr::filter(year %in% c(2018:2020))
 
   #average site file cases across last three years
   site_file_cases<- data.table::data.table(site_data$cases_deaths[, c('year', 'wmr_cases')])
-  site_file_cases<- site_file_cases[year >= 2018]
-  average_value<- mean(site_file_cases$wmr_cases)
+  site_file_cases<- site_file_cases[year %in% c(2018:2020)]
 
-  # calculate ratio in comparison to year 2020 cases in output
-  output_cases<- pre_scale |>
-    dplyr::filter(year == 2020) |>
-    select(cases)
+  scaling_cases<- merge(site_file_cases, pre_scale, by = 'year')
+  scaling_cases<- scaling_cases |>
+    mutate(ratio= wmr_cases/ cases)
 
-  ratio<- average_value/output_cases$cases
+  ratio<- mean(scaling_cases$ratio)
 
   # add pre-scaled cases to output df as a new column
   dt<- dt |>
