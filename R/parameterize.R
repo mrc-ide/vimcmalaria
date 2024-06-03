@@ -56,7 +56,9 @@ pull_input_params<- function(site_name,
 
   if(iso3c == 'ETH'){
 
-    params<- recalibrate(params, site_name= site_name, site_data = site_data)
+    params<- recalibrate(params,
+                         site_name= site_name,
+                         site_dt = site_data)
 
   }
   # set age groups
@@ -251,10 +253,10 @@ expand_intervention_coverage<- function(site, terminal_year){
 #' Very basic recalibration function (for Ethiopia sites)
 #' @param   params           simulation parameters
 #' @param   site_name        name of site to recalibrate
-#' @param site_data site data
+#' @param   site_dt site data
 #' @returns recalibrated site
 #' @export
-recalibrate<- function(params, site_name, site_data){
+recalibrate<- function(params, site_name, site_dt){
 
 
   summary_mean_pfpr_2_10 <- function (x) {
@@ -268,7 +270,7 @@ recalibrate<- function(params, site_name, site_data){
   }
 
   # pull target pfpr from 2010 for corresponding site
-  target_pfpr <- site_data$prevalence |> dplyr::filter(year == 2010, name_1 == site_name) |> dplyr::pull(pfpr)
+  target_pfpr <- site_dt$prevalence |> dplyr::filter(year == 2010, name_1 == site_name) |> dplyr::pull(pfpr)
 
   print(paste0('target pfpr ', target_pfpr ))
 
