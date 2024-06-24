@@ -259,8 +259,25 @@ get_site_output<- function(index, map, output_filepath){
   return(sites)
 }
 
+#' Pull site level processed output based on metadata input
+#' @param index           observation in metadata df
+#' @param map             metadata df
+#' @param output_filepath filepath where outputs live
+#' @export
+get_dose_output<- function(index, map, output_filepath){
 
-#' Pull site level dose output based on metadata input
+  metadata<- map[ index,]
+
+  directory<- metadata$directory_name
+  draw<- metadata$parameter_draw
+
+  message(directory)
+
+  output<- readRDS(paste0(output_filepath, directory, '/dose_output.rds'))                  # get output file
+  return(output)
+}
+
+#' Pull site level output based on metadata input
 #' @param index           observation in metadata df
 #' @param map             metadata df
 #' @param output_filepath filepath where outputs live
@@ -283,4 +300,88 @@ get_raw_output<- function(index, map, output_filepath){
 }
 
 
+compile_diagnostics<- function(descrip, date_time){
+
+  completed<- completed_reports('diagnostics')
+  completed<- completed[description == {{descrip}} & date_time>= {{date_time}}] |>
+    dplyr::arrange(desc(date_time)) |>
+    dplyr::distinct(iso3c, description, .keep_all = TRUE) |>
+    dplyr::arrange(iso3c, description)
+
+
+  copy_report<- function(index, map){
+
+    message(index)
+    map<- map[ index,]
+    directory_name<- map$directory_name
+    iso3c<- map$iso3c
+    file.copy(from= paste0('J:/VIMC_malaria/archive/diagnostics/', directory_name, '/diagnostic_report_', iso3c, '.html'),
+              to= paste0('J:/VIMC_malaria/diagnostics/', iso3c, '.html'),
+              overwrite = TRUE)
+  }
+
+  lapply(c(1:nrow(completed)), copy_report, map = completed)
+}
+
+#' Pull final outputs from workflow
+#' @param descrip         description of runs to pull
+#' @export
+compile_final_outputs<- function(descrip){
+
+  completed<- completed_reports('postprocessing')
+  completed<- completed[description == {{descrip}}] |>
+    dplyr::arrange(desc(date_time)) |>
+    dplyr::distinct(iso3c, description, .keep_all = TRUE) |>
+    dplyr::arrange(iso3c, description)
+
+  pull_output<- function(index, map){
+
+    message(index)
+    map<- map[ index,]
+    directory_name<- map$directory_name
+    iso3c<- map$iso3c
+    output<- rbindlist(readRDS(paste0('J:/VIMC_malaria/archive/postprocessing/', directory_name, '/final_output.rds')))
+    return(output)
+  }
+
+  outputs<- rbindlist(lapply(c(1:nrow(completed)), pull_output, map = completed))
+}
+
+#' Pull final outputs from workflow
+#' @param descrip         description of runs to pull
+#' @export
+compile_dose_outputs<- function(descrip){
+
+  completed<- completed_reports('postprocessing')
+  completed<- completed[description == {{descrip}}] |>
+    dplyr::arrange(desc(date_time)) |>
+    dplyr::distinct(iso3c, description, .keep_all = TRUE) |>
+    dplyr::arrange(iso3c, description)
+
+  pull_dose_output<- function(index, map){
+
+    message(index)
+    map<- map[ index,]
+    directory_name<- map$directory_name
+    iso3c<- map$iso3c
+    output<- readRDS(paste0('J:/VIMC_malaria/archive/postprocessing/', directory_name, '/dose_output.rds'))
+
+
+    # then sum all doses + cases + deaths averted up to country level by year
+    output<- output |>
+      group_by(year, scenario) |>
+      summarise(cases_averted = sum(cases_averted),
+                deaths_averted = sum(deaths_averted),
+                doses_total = sum(doses_total),
+                fvp = sum(fvp),
+                .groups = 'keep') |>
+      filter(doses_total != 0) |>
+      mutate(iso3c = iso3c)
+
+
+    return(output)
+  }
+
+  outputs<- rbindlist(lapply(c(1:nrow(completed)), pull_dose_output, map = completed))
+}
 

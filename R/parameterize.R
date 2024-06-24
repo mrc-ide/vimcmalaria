@@ -54,13 +54,7 @@ pull_input_params<- function(site_name,
     overrides = list(human_population = run_params$pop_val)
   )
 
-  if(iso3c == 'ETH'){
 
-    params<- recalibrate(params,
-                         site_name= site_name,
-                         site_dt = site_data)
-
-  }
   # set age groups
   params$clinical_incidence_rendering_min_ages = run_params$min_ages
   params$clinical_incidence_rendering_max_ages = run_params$max_ages
@@ -71,6 +65,15 @@ pull_input_params<- function(site_name,
 
   # if this is a stochastic run, set parameter draw ------------------------------
   params<- parameterize_stochastic_run(params, parameter_draw)
+
+  if(iso3c == 'ETH'){
+
+    params<- recalibrate(params,
+                         site_name= site_name,
+                         site_dt = site_data)
+
+  }
+
   params$pev<- TRUE
 
   inputs <- list(
