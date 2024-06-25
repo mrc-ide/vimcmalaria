@@ -68,10 +68,11 @@ pull_input_params<- function(site_name,
 
   if(iso3c == 'ETH'){
 
-    params<- recalibrate(params,
+    cal_params<- recalibrate(params,
                          site_name= site_name,
                          site_dt = site_data)
 
+    params<- cal_params$params
   }
 
   params$pev<- TRUE
@@ -297,6 +298,7 @@ recalibrate<- function(params, site_name, site_dt){
   print(paste0('calibrated EIR for site ', site_name, ' :', cali_EIR))
 
   params<- set_equilibrium(params, init_EIR = cali_EIR)
+  eir_info<- data.frame('site_name' = site_name, 'EIR' = cali_EIR)
 
-  return(params)
+  return(list('params' = params, 'eir_info' = eir_info))
 }
