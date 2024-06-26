@@ -2,13 +2,17 @@
 #' @param   model_input      list with input parameters and identifying info
 #' @returns model output
 #' @export
-run_model<- function(model_input){
+run_model<- function(model_input, seed){
   message('running the model')
 
   params <- model_input$param_list
   params$progress_bar <- TRUE
 
-  set.seed(56)
+  if(iso3c == 'ETH'){
+
+    set.seed(seed)
+  }
+  #set.seed(56)
 
   model <- retry::retry(
     malariasimulation::run_simulation(timesteps = params$timesteps,

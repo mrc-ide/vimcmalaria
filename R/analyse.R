@@ -17,7 +17,15 @@ analyse_site<- function(site,
                                   parameter_draw = site$parameter_draw,
                                   gfa = site$gfa,
                                   quick_run = site$quick_run)
-  model<- run_model(model_input)
+
+  if(iso3c == 'ETH'){
+
+    model_input<- readRDS(paste0('J:/VIMC_malaria/analyses/ethiopia/calibrations/calibrated_site', site$site_name, '.rds'))
+
+    model_input<- model_input$params
+
+  }
+  model<- run_model(model_input, seed= site$parameter_draw)
   output<- process_output(model,
                           vimc_input,
                           site_data = site_data,

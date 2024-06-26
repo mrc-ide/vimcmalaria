@@ -64,15 +64,17 @@ pull_input_params<- function(site_name,
   params$age_group_rendering_max_ages = run_params$max_ages
 
   # if this is a stochastic run, set parameter draw ------------------------------
-  params<- parameterize_stochastic_run(params, parameter_draw)
+  #params<- parameterize_stochastic_run(params, parameter_draw)
 
   if(iso3c == 'ETH'){
 
-    cal_params<- recalibrate(params,
-                         site_name= site_name,
-                         site_dt = site_data)
+    cali_eir<- readRDS(paste0('J:/VIMC_malaria/analyses/ethiopia/calibrations/calibrated_site',site_name, '.rds' )
+    cali_EIR<- cali_eir$eir_info$EIR
 
-    params<- cal_params$params
+    message(paste0('calibrating to EIR of ', cali_EIR))
+    params<- set_equilibrium(params, init_EIR = cali_EIR)
+
+
   }
 
   params$pev<- TRUE
@@ -191,7 +193,7 @@ update_coverage_values<- function(site, iso3c, coverage_data, scenario_name){
            r21_booster_coverage = R4)
 
   # transform booster coverage into value per person according to coverage in the preceding year
-  if(scenario_name == 'malaria-rts3-rts4-bluesky'){
+  if(scenario_name == 'malaria-rts3-rts4-bluesky' | scenario_name == 'malaria-r3-r4-bluesky'){
     dt[rtss_booster_coverage== 0.9, rtss_booster_coverage:= 1]
   }else{
   for (yr in unique(dt$year)){
