@@ -8,10 +8,10 @@ run_model<- function(model_input, seed){
   params <- model_input$param_list
   params$progress_bar <- TRUE
 
-  if(iso3c == 'ETH'){
+
 
     set.seed(seed)
-  }
+
   #set.seed(56)
 
   model <- retry::retry(
