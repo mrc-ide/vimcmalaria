@@ -68,7 +68,7 @@ pull_input_params<- function(site_name,
 
   if(iso3c == 'ETH'){
 
-    cali_eir<- readRDS(paste0('J:/VIMC_malaria/analyses/ethiopia/calibrations/calibrated_site',site_name, '.rds' )
+    cali_eir<- readRDS(paste0('J:/VIMC_malaria/analyses/ethiopia/calibrations/calibrated_site',site_name, '.rds' ))
     cali_EIR<- cali_eir$eir_info$EIR
 
     message(paste0('calibrating to EIR of ', cali_EIR))
