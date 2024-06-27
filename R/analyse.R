@@ -19,7 +19,7 @@ analyse_site<- function(site,
                                   quick_run = site$quick_run)
 
 
-  model<- run_model(model_input, seed= site$parameter_draw)
+  model<- run_model(model_input)
   output<- process_output(model,
                           vimc_input,
                           site_data = site_data,

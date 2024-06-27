@@ -64,7 +64,7 @@ pull_input_params<- function(site_name,
   params$age_group_rendering_max_ages = run_params$max_ages
 
   # if this is a stochastic run, set parameter draw ------------------------------
-  #params<- parameterize_stochastic_run(params, parameter_draw)
+  params<- parameterize_stochastic_run(params, parameter_draw)
 
   if(iso3c == 'ETH'){
 
@@ -196,6 +196,7 @@ update_coverage_values<- function(site, iso3c, coverage_data, scenario_name){
   if(scenario_name == 'malaria-rts3-rts4-bluesky' | scenario_name == 'malaria-r3-r4-bluesky'){
 
     dt[rtss_booster_coverage== 0.9, rtss_booster_coverage:= 1]
+    dt[r21_booster_coverage== 0.9, r21_booster_coverage:= 1]
 
   }else{
   for (yr in unique(dt$year)){
