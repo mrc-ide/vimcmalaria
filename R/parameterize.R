@@ -194,7 +194,9 @@ update_coverage_values<- function(site, iso3c, coverage_data, scenario_name){
 
   # transform booster coverage into value per person according to coverage in the preceding year
   if(scenario_name == 'malaria-rts3-rts4-bluesky' | scenario_name == 'malaria-r3-r4-bluesky'){
+
     dt[rtss_booster_coverage== 0.9, rtss_booster_coverage:= 1]
+
   }else{
   for (yr in unique(dt$year)){
 
