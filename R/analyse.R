@@ -39,11 +39,13 @@ analyse_site<- function(site,
 #' @param site_df   analysis map with input parameters
 #' @param site_data site data
 #' @param test      boolean-- if true, only run analysis for two test sites. Good for quick tests of code functionality
+#' @param run_all   run all sites regardless of pfpr (boolean)
 #' @returns analysis map to be used as an input for analyse_site
 #' @export
 make_analysis_map<- function(site_df,
                              site_data,
-                             test){
+                             test,
+                             run_all){
 
 
   site_data$prevalence<- site_data$prevalence |>
@@ -89,7 +91,7 @@ make_analysis_map<- function(site_df,
     stop('dropped admin units, debug')
   }
 
-  if(scenario == 'no-vaccination'){
+  if(scenario == 'no-vaccination' | run_all == TRUE){
 
     site_info<- site_info |>
       mutate(run_model = TRUE)

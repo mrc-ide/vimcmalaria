@@ -350,14 +350,20 @@ compile_final_outputs<- function(descrip){
 #' Pull final outputs from workflow
 #' @param descrip         description of runs to pull
 #' @export
-compile_dose_outputs<- function(descrip){
+compile_dose_outputs<- function(descrip, iso){
 
   completed<- completed_reports('postprocessing')
+
   completed<- completed[description == {{descrip}}] |>
     dplyr::arrange(desc(date_time)) |>
     dplyr::distinct(iso3c, description, .keep_all = TRUE) |>
     dplyr::arrange(iso3c, description)
 
+  if(iso!= 'all'){
+    completed<- completed |>
+
+    dplyr::filter(iso3c == iso)
+  }
   pull_dose_output<- function(index, map){
 
     message(index)

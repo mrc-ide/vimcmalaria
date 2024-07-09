@@ -4,7 +4,7 @@
 \alias{make_analysis_map}
 \title{make an analysis map of input parameters for vaccine modelling run}
 \usage{
-make_analysis_map(site_df, site_data, test)
+make_analysis_map(site_df, site_data, test, run_all)
 }
 \arguments{
 \item{site_df}{analysis map with input parameters}
@@ -12,6 +12,8 @@ make_analysis_map(site_df, site_data, test)
 \item{site_data}{site data}
 
 \item{test}{boolean-- if true, only run analysis for two test sites. Good for quick tests of code functionality}
+
+\item{run_all}{run all sites regardless of pfpr (boolean)}
 }
 \value{
 analysis map to be used as an input for analyse_site
