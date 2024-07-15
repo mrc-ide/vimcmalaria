@@ -337,6 +337,11 @@ pull_baseline_params<- function(site_name,
                        ur = ur)
 
 
+  site$interventions$rtss_coverage<- 0
+  site$interventions$r21_coverage<- 0
+  site$interventions$rtss_booster_coverage<- 0
+  site$interventions$r21_booster_coverage<- 0
+
   run_params<- pull_age_groups_time_horizon(quick_run)
 
   # check the site has a non-zero EIR
