@@ -76,18 +76,3 @@ run_baseline_model<- function(model_input){
 }
 
 
-
-
-
-
-
-# run simulation for remaining period
-second_phase <- malariasimulation:::run_resumable_simulation(
-  timesteps = params$timesteps,
-  params,
-  initial_state=first_phase$state,
-  restore_random_state=TRUE)
-
-# bind output from first and second phase together
-model<- rbind(first_phase$data, second_phase$data)
-
