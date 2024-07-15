@@ -44,17 +44,13 @@ analyse_site<- function(site,
 #' @returns modelled + processed output
 #' @export
 analyse_baseline<- function(site,
-                        site_data,
-                        vimc_input){
+                        site_data){
 
-  model_input<- pull_input_params(site_name = site$site_name,
+  model_input<- pull_baseline_params(site_name = site$site_name,
                                   ur = site$ur,
                                   site_data = site_data,
-                                  coverage_data = vimc_input$coverage_input,
-                                  scenario = site$scenario,
                                   iso3c = site$iso3c,
                                   parameter_draw = site$parameter_draw,
-                                  gfa = site$gfa,
                                   quick_run = site$quick_run)
 
 

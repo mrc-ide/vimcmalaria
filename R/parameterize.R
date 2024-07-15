@@ -307,3 +307,86 @@ recalibrate<- function(params, site_name, site_dt){
 
   return(list('params' = params, 'eir_info' = eir_info))
 }
+
+
+
+
+# parameter functions
+
+
+#' parameterize site + urbanicty of interest
+#' @param   site_name        name of site
+#' @param   ur               urbanicity, urban or rural
+#' @param   site_data        site file
+#' @param   parameter_draw   parameter draw value
+#' @param   quick_run        quick_run setting (boolean)
+#' @param   iso3c            country code
+#' @returns site file with additional variables 'rtss_coverage', 'rtss_booster_coverage', 'r21_coverage', 'r21_booster_coverage'
+#' @export
+pull_baseline_params<- function(site_name,
+                             ur,
+                             iso3c,
+                             site_data,
+                             parameter_draw,
+                             quick_run){
+
+  message('parameterizing')
+  # site data
+  site <- extract_site(site_file = site_data,
+                       site_name = site_name,
+                       ur = ur)
+
+
+  run_params<- pull_age_groups_time_horizon(quick_run)
+
+  # check the site has a non-zero EIR
+  check_eir(site)
+
+  # pull parameters for this site ------------------------------------------------
+  params <- site::site_parameters(
+    interventions = site$interventions,
+    demography = site$demography,
+    vectors = site$vectors,
+    seasonality = site$seasonality,
+    eir = site$eir$eir[1],
+    burnin = run_params$burnin,
+    overrides = list(human_population = run_params$pop_val)
+  )
+
+
+  # set age groups
+  params$clinical_incidence_rendering_min_ages = run_params$min_ages
+  params$clinical_incidence_rendering_max_ages = run_params$max_ages
+  params$severe_incidence_rendering_min_ages = run_params$min_ages
+  params$severe_incidence_rendering_max_ages = run_params$max_ages
+  params$age_group_rendering_min_ages = run_params$min_ages
+  params$age_group_rendering_max_ages = run_params$max_ages
+
+  # if this is a stochastic run, set parameter draw ------------------------------
+  params<- parameterize_stochastic_run(params, parameter_draw)
+
+  if(iso3c == 'ETH'){
+
+    cali_eir<- readRDS(paste0('J:/VIMC_malaria/analyses/ethiopia/calibrations/calibrated_site',site_name, '.rds' ))
+    cali_EIR<- cali_eir$eir_info$EIR
+
+    message(paste0('calibrating to EIR of ', cali_EIR))
+    params<- set_equilibrium(params, init_EIR = cali_EIR)
+
+
+  }
+
+  params$pev<- TRUE
+
+  inputs <- list(
+    'param_list' = params,
+    'site_name' = site_name,
+    'ur' = ur,
+    'iso' = iso3c,
+    'parameter_draw' = parameter_draw,
+  )
+
+  return(inputs)
+
+}
+
