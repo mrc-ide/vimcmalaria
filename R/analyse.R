@@ -35,6 +35,34 @@ analyse_site<- function(site,
   return(output)
 }
 
+
+
+#' model vaccine impact
+#' @param site   analysis map with input parameters
+#' @param site_data site data
+#' @param vimc_input vimc_input
+#' @returns modelled + processed output
+#' @export
+analyse_baseline<- function(site,
+                        site_data,
+                        vimc_input){
+
+  model_input<- pull_input_params(site_name = site$site_name,
+                                  ur = site$ur,
+                                  site_data = site_data,
+                                  coverage_data = vimc_input$coverage_input,
+                                  scenario = site$scenario,
+                                  iso3c = site$iso3c,
+                                  parameter_draw = site$parameter_draw,
+                                  gfa = site$gfa,
+                                  quick_run = site$quick_run)
+
+
+  model<- run_baseline_model(model_input)
+
+  return(model)
+}
+
 #' make an analysis map of input parameters for vaccine modelling run
 #' @param site_df   analysis map with input parameters
 #' @param site_data site data
