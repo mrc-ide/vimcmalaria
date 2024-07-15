@@ -47,11 +47,11 @@ analyse_baseline<- function(site,
                         site_data){
 
   model_input<- pull_baseline_params(site_name = site$site_name,
-                                  ur = site$ur,
-                                  site_data = site_data,
-                                  iso3c = site$iso3c,
-                                  parameter_draw = site$parameter_draw,
-                                  quick_run = site$quick_run)
+                                     ur = site$ur,
+                                     site_data = site_data,
+                                     iso3c = site$iso3c,
+                                     parameter_draw = site$parameter_draw,
+                                     quick_run = site$quick_run)
 
 
   model<- run_baseline_model(model_input)
@@ -70,7 +70,6 @@ make_analysis_map<- function(site_df,
                              site_data,
                              test,
                              run_all){
-
 
   site_data$prevalence<- site_data$prevalence |>
     dplyr::filter(year == 2019) |>
@@ -94,12 +93,11 @@ make_analysis_map<- function(site_df,
 
   if(unique(site_df$country) == 'Sudan'){
 
-
     site_data$prevalence <- site_data$prevalence |>
       mutate(run_model = ifelse(name_1 == 'South Darfur', TRUE, run_model)) |>
       mutate(run_model = ifelse(name_1 == 'West Kurdufan', TRUE, run_model))
-
   }
+
   prevalence<- site_data$prevalence |>
     select(name_1, urban_rural, iso3c, run_model) |>
     rename(site_name = name_1,

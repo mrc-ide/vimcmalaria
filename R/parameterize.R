@@ -1,5 +1,3 @@
-# parameter functions
-
 
 #' parameterize site + urbanicty of interest
 #' @param   site_name        name of site
@@ -320,11 +318,11 @@ recalibrate<- function(params, site_name, site_dt){
 #' @returns site file with additional variables 'rtss_coverage', 'rtss_booster_coverage', 'r21_coverage', 'r21_booster_coverage'
 #' @export
 pull_baseline_params<- function(site_name,
-                             ur,
-                             iso3c,
-                             site_data,
-                             parameter_draw,
-                             quick_run){
+                                ur,
+                                iso3c,
+                                site_data,
+                                parameter_draw,
+                                quick_run){
 
   message('parameterizing')
   # site data
@@ -384,7 +382,7 @@ pull_baseline_params<- function(site_name,
     'site_name' = site_name,
     'ur' = ur,
     'iso' = iso3c,
-    'parameter_draw' = parameter_draw,
+    'parameter_draw' = parameter_draw
   )
 
   return(inputs)

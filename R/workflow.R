@@ -35,7 +35,7 @@ completed_reports<- function(report_name){
 #'  Make a map of input parameters for VIMC modelling
 #' @param iso3cs  countries to run models for you
 #' @param scenarios  scenarios to run models for. Default is all scenarios for the current round
-#' @param gfa global fund assumptions for coverage of other interventiosn (true or false)
+#' @param gfa global fund assumptions for coverage of other interventions (true or false)
 #' @param description reason for model run
 #' @param parameter_draws draws to run model for
 #' @param quick_run quick run setting (boolean)
