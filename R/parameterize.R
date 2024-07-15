@@ -32,7 +32,7 @@ pull_input_params<- function(site_name,
 
   run_params<- pull_age_groups_time_horizon(quick_run)
 
-  # specify vaccine coverage based on forecast  ----------------------------------
+  # specify vaccine coverage based on forecast  --------------------------------
   site<- expand_intervention_coverage(site,
                                       terminal_year = run_params$term_yr)
   site<- update_coverage_values(site,
@@ -310,10 +310,6 @@ recalibrate<- function(params, site_name, site_dt){
 
 
 
-
-# parameter functions
-
-
 #' parameterize site + urbanicty of interest
 #' @param   site_name        name of site
 #' @param   ur               urbanicity, urban or rural
@@ -347,7 +343,7 @@ pull_baseline_params<- function(site_name,
   # check the site has a non-zero EIR
   check_eir(site)
 
-  # pull parameters for this site ------------------------------------------------
+  # pull parameters for this site ----------------------------------------------
   params <- site::site_parameters(
     interventions = site$interventions,
     demography = site$demography,
@@ -367,7 +363,7 @@ pull_baseline_params<- function(site_name,
   params$age_group_rendering_min_ages = run_params$min_ages
   params$age_group_rendering_max_ages = run_params$max_ages
 
-  # if this is a stochastic run, set parameter draw ------------------------------
+  # if this is a stochastic run, set parameter draw ----------------------------
   params<- parameterize_stochastic_run(params, parameter_draw)
 
   if(iso3c == 'ETH'){
