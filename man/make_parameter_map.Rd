@@ -20,7 +20,7 @@ make_parameter_map(
 
 \item{scenarios}{scenarios to run models for. Default is all scenarios for the current round}
 
-\item{gfa}{global fund assumptions for coverage of other interventiosn (true or false)}
+\item{gfa}{global fund assumptions for coverage of other interventions (true or false)}
 
 \item{description}{reason for model run}
 
