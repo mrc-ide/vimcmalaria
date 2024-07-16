@@ -4,7 +4,7 @@
 \alias{analyse_site}
 \title{model vaccine impact}
 \usage{
-analyse_site(site, site_data, vimc_input)
+analyse_site(site, site_data, vimc_input, baseline_outputs)
 }
 \arguments{
 \item{site}{analysis map with input parameters}
