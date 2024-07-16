@@ -6,7 +6,8 @@
 #' @export
 analyse_site<- function(site,
                         site_data,
-                        vimc_input){
+                        vimc_input,
+                        baseline_outputs){
 
   model_input<- pull_input_params(site_name = site$site_name,
                                   ur = site$ur,
@@ -19,7 +20,7 @@ analyse_site<- function(site,
                                   quick_run = site$quick_run)
 
 
-  model<- run_model(model_input)
+  model<- run_scenario_model(model_input, baseline_outputs)
   output<- process_output(model,
                           vimc_input,
                           site_data = site_data,
