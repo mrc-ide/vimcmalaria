@@ -58,18 +58,6 @@ run_baseline_model<- function(model_input){
       interval = 3
     )
 
-    # add identifying information to output
-    first_phase$data <- first_phase$data |>
-      mutate(site_name = model_input$site_name,
-             urban_rural = model_input$ur,
-             iso = model_input$iso3c,
-             description = model_input$description,
-             gfa = model_input$gfa,
-             parameter_draw = model_input$parameter_draw,
-             population = model_input$pop_val,
-             burnin = model_input$burnin)
-
-
     # save model runs somewhere
     message('saving the model')
 
@@ -79,37 +67,62 @@ run_baseline_model<- function(model_input){
 }
 
 
-#' #' Run baseline model for the VIMC scenarios (no vaccination, 15 years of burnin + )
-#' #' @param   model_input      list with input parameters and identifying info
-#' #' @returns model output
-#' #' @export
-#' run_scenario_model<- function(model_input){
-#'
-#'   message('running the model')
-#'
-#'   params <- model_input$param_list
-#'   params$progress_bar <- TRUE
-#'
-#'   set.seed(56)
-#'
-#'   test <- baseline_outputs[[paste]]
-#'
-#'   # add identifying information to output
-#'   first_phase$data <- first_phase$data |>
-#'     mutate(site_name = model_input$site_name,
-#'            urban_rural = model_input$ur,
-#'            iso = model_input$iso3c,
-#'            description = model_input$description,
-#'            gfa = model_input$gfa,
-#'            parameter_draw = model_input$parameter_draw,
-#'            population = model_input$pop_val,
-#'            burnin = model_input$burnin)
-#'
-#'
-#'   # save model runs somewhere
-#'   message('saving the model')
-#'
-#'   return(list(paste0(model_input$site_name, '_', model_input$ur) = first_phase))
-#' }
+#' Run baseline model for the VIMC scenarios (no vaccination, 15 years of burnin + )
+#' @param   model_input      list with input parameters and identifying info
+#' @returns model output
+#' @export
+run_scenario_model<- function(model_input, baseline_outputs){
+
+  message('running the model')
+
+  params <- model_input$param_list
+  params$progress_bar <- TRUE
+
+  site_ur<- paste0(model_input$site_name, '_', model_input$ur)
+  set.seed(56)
+
+  ids <- data.table()
+  for (item in c(1:length(baseline_outputs))) {
+    subset <- output[[item]]
+
+    id <- data.table('id' = subset$id)
+
+    ids <- rbind(id, ids, fill = T)
+  }
+
+  # find the index of the output which contains site of interest
+  index <- which(ids$id == site_ur)
+
+  # pull simulation state and data for this index
+  first_phase <- baseline_outputs[[index]]
+
+  # run simulation for remaining period
+  second_phase <- malariasimulation:::run_resumable_simulation(
+    timesteps = params$timesteps,
+    params,
+    initial_state = first_phase$state,
+    restore_random_state = TRUE
+  )
+
+  # bind output from first and second phase together
+  model <- rbind(first_phase$data, second_phase$data)
+
+  # add identifying information to output
+  model <- model |>
+    mutate(
+      site_name = model_input$site_name,
+      urban_rural = model_input$ur,
+      iso = model_input$iso3c,
+      description = model_input$description,
+      scenario = model_input$scenario,
+      gfa = model_input$gfa,
+      parameter_draw = model_input$parameter_draw,
+      population = model_input$pop_val,
+      burnin = model_input$burnin
+    )
+
+
+return(model)
+}
 
 
