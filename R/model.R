@@ -41,7 +41,7 @@ run_model<- function(model_input){
 #' @param   model_input      list with input parameters and identifying info
 #' @returns model output
 #' @export
-run_baseline_models<- function(model_input){
+run_baseline_model<- function(model_input){
 
   message('running the model')
 
