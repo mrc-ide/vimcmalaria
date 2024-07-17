@@ -68,7 +68,8 @@ run_baseline_model<- function(model_input){
 
 
 #' Run baseline model for the VIMC scenarios (no vaccination, 15 years of burnin + )
-#' @param   model_input      list with input parameters and identifying info
+#' @param   model_input           list with input parameters and identifying info
+#' @param   baseline_outputs      resumable simulations for burn-in period/ 2000-2022
 #' @returns model output
 #' @export
 run_scenario_model<- function(model_input, baseline_outputs){
@@ -83,7 +84,7 @@ run_scenario_model<- function(model_input, baseline_outputs){
 
   ids <- data.table()
   for (item in c(1:length(baseline_outputs))) {
-    subset <- output[[item]]
+    subset <- baseline_outputs[[item]]
 
     id <- data.table('id' = subset$id)
 

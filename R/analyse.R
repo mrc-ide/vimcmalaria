@@ -2,6 +2,7 @@
 #' @param site   analysis map with input parameters
 #' @param site_data site data
 #' @param vimc_input vimc_input
+#' @param baseline_outputs baseline_outputs
 #' @returns modelled + processed output
 #' @export
 analyse_site<- function(site,
