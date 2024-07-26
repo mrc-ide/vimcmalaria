@@ -106,7 +106,7 @@ run_scenario_model<- function(model_input, baseline_outputs){
   )
 
   # bind output from first and second phase together
-  model <- rbind(first_phase$data, second_phase$data)
+  model <- dplyr::bind_rows(first_phase$data, second_phase$data)
 
   # add identifying information to output
   model <- model |>
