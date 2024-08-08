@@ -20,7 +20,7 @@ run_model<- function(model_input){
 
   # add identifying information to output
   model <- model |>
-    mutate(site_name = model_input$site_name,
+    dplyr::mutate(site_name = model_input$site_name,
            urban_rural = model_input$ur,
            iso = model_input$iso3c,
            description = model_input$description,
@@ -82,13 +82,13 @@ run_scenario_model<- function(model_input, baseline_outputs){
   site_ur<- paste0(model_input$site_name, '_', model_input$ur)
   set.seed(56)
 
-  ids <- data.table()
+  ids <- data.table::data.table()
   for (item in c(1:length(baseline_outputs))) {
     subset <- baseline_outputs[[item]]
 
-    id <- data.table('id' = subset$id)
+    id <- data.table::data.table('id' = subset$id)
 
-    ids <- rbind(id, ids, fill = T)
+    ids <- rbind(ids, id, fill = T)
   }
 
   # find the index of the output which contains site of interest
@@ -110,7 +110,7 @@ run_scenario_model<- function(model_input, baseline_outputs){
 
   # add identifying information to output
   model <- model |>
-    mutate(
+    dplyr::mutate(
       site_name = model_input$site_name,
       urban_rural = model_input$ur,
       iso = model_input$iso3c,
