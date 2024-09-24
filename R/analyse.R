@@ -17,7 +17,6 @@ analyse_site<- function(site,
                                   scenario = site$scenario,
                                   iso3c = site$iso3c,
                                   parameter_draw = site$parameter_draw,
-                                  gfa = site$gfa,
                                   quick_run = site$quick_run)
 
 
@@ -30,7 +29,6 @@ analyse_site<- function(site,
                           iso3c = site$iso3c,
                           scenario = site$scenario,
                           parameter_draw = site$parameter_draw,
-                          gfa = site$gfa,
                           quick_run = site$quick_run,
                           description= site$description)
 
@@ -129,8 +127,7 @@ make_analysis_map<- function(site_df,
   site_info<- site_info |>
     mutate(scenario = {{scenario}},
            quick_run = {{quick_run}},
-           parameter_draw = {{parameter_draw}},
-           gfa = {{gfa}})
+           parameter_draw = {{parameter_draw}})
 
 
   Encoding(site_info$site_name) <- "UTF-8"

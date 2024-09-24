@@ -5,7 +5,6 @@
 #' @param   site_data        site file
 #' @param   coverage_data    VIMC vaccine forecast for site of interest
 #' @param   scenario         vaccine forecast scenario
-#' @param   gfa              global fund assumptions for other intervention coverage
 #' @param   parameter_draw   parameter draw value
 #' @param   quick_run        quick_run setting (boolean)
 #' @param   iso3c            country code
@@ -17,7 +16,6 @@ pull_input_params<- function(site_name,
                              site_data,
                              coverage_data,
                              scenario,
-                             gfa,
                              parameter_draw,
                              quick_run){
 
@@ -83,7 +81,6 @@ pull_input_params<- function(site_name,
     'ur' = ur,
     'iso' = iso3c,
     'scenario' = scenario,
-    'gfa' = gfa,
     'parameter_draw' = parameter_draw,
     'pop_val' = run_params$pop_val,
     'burnin' =  run_params$burnin
