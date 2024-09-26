@@ -12,6 +12,8 @@ analyse_site(site, site_data, vimc_input, baseline_outputs)
 \item{site_data}{site data}
 
 \item{vimc_input}{vimc_input}
+
+\item{baseline_outputs}{baseline_outputs}
 }
 \value{
 modelled + processed output

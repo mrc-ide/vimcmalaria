@@ -11,7 +11,6 @@ pull_input_params(
   site_data,
   coverage_data,
   scenario,
-  gfa,
   parameter_draw,
   quick_run
 )
@@ -28,8 +27,6 @@ pull_input_params(
 \item{coverage_data}{VIMC vaccine forecast for site of interest}
 
 \item{scenario}{vaccine forecast scenario}
-
-\item{gfa}{global fund assumptions for other intervention coverage}
 
 \item{parameter_draw}{parameter draw value}
 
