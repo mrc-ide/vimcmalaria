@@ -173,44 +173,34 @@ update_coverage_values<- function(site, iso3c, coverage_data, scenario_name){
              year + vaccine ~ vaccine_name,
              value.var= 'coverage')
 
-  # if columns for other vaccines or doses are empty, fill them ----------------
-  columns_to_check <- c("R3", "R4", "RTS3", "RTS4")
-  missing_columns <- setdiff(columns_to_check, names(dt))
+  
+  if(vaccine_val == 'R21'){
+    dt<- dt |>
+      mutate(coverage = R3,
+             booster_coverage = R4) |>
+      select(-R3, -R4)
 
-  dt <- dt |>
-    tibble::add_column(!!!stats::setNames(rep(0, length(missing_columns)),
-                           missing_columns))
+  }else{
+    dt<- dt |>
+      mutate(coverage = RTS3,
+             booster_coverage = RTS4) |>
+      select(-RTS3, -RTS4)
 
-  dt <- dt |>
-    rename(rtss_coverage = RTS3,
-           rtss_booster_coverage = RTS4,
-           r21_coverage = R3,
-           r21_booster_coverage = R4)
+  }
 
   # transform booster coverage into value per person according to coverage in the preceding year
-  if(scenario_name == 'malaria-rts3-rts4-bluesky' | scenario_name == 'malaria-r3-r4-bluesky'){
+  if(scenario_name %like% 'bluesky'){
 
-    dt[rtss_booster_coverage== 0.9, rtss_booster_coverage:= 1]
-    dt[r21_booster_coverage== 0.9, r21_booster_coverage:= 1]
+    dt[booster_coverage== 0.9, booster_coverage:= 1]
 
   }else{
   for (yr in unique(dt$year)){
 
-    dt[year== yr & rtss_coverage!= 0 & rtss_booster_coverage!= 0,
-       rtss_booster_coverage := rtss_booster_coverage / dt[year == yr- 1, rtss_coverage]]
-
-    dt[year== yr & r21_coverage!= 0 & r21_booster_coverage!= 0,
-       r21_booster_coverage := r21_booster_coverage / dt[year == yr- 1, r21_coverage]]
+    dt[year== yr & coverage!= 0 & booster_coverage!= 0,
+      booster_coverage := booster_coverage / dt[year == yr- 1, booster_coverage]]
   }
 }
   intvns<- data.table::data.table(merge(site$interventions, dt, by = 'year', all.x= T))
-
-  intvns[is.na(rtss_coverage), "rtss_coverage" := 0]
-  intvns[is.na(rtss_booster_coverage), "rtss_booster_coverage" := 0]
-  intvns[is.na(r21_coverage), "r21_coverage" := 0]
-  intvns[is.na(r21_booster_coverage), "r21_booster_coverage" := 0]
-  intvns[is.na(vaccine), vaccine := vaccine_val]
-
   site$interventions<- intvns
 
   return(site)
@@ -301,88 +291,5 @@ recalibrate<- function(params, site_name, site_dt){
   eir_info<- data.frame('site_name' = site_name, 'EIR' = cali_EIR)
 
   return(list('params' = params, 'eir_info' = eir_info))
-}
-
-
-
-#' parameterize site + urbanicty of interest
-#' @param   site_name        name of site
-#' @param   ur               urbanicity, urban or rural
-#' @param   site_data        site file
-#' @param   parameter_draw   parameter draw value
-#' @param   quick_run        quick_run setting (boolean)
-#' @param   iso3c            country code
-#' @returns site file with additional variables 'rtss_coverage', 'rtss_booster_coverage', 'r21_coverage', 'r21_booster_coverage'
-#' @export
-pull_baseline_params<- function(site_name,
-                                ur,
-                                iso3c,
-                                site_data,
-                                parameter_draw,
-                                quick_run){
-
-  message('parameterizing')
-  # site data
-  site <- extract_site(site_file = site_data,
-                       site_name = site_name,
-                       ur = ur)
-
-
-  site$interventions$rtss_coverage<- 0
-  site$interventions$r21_coverage<- 0
-  site$interventions$rtss_booster_coverage<- 0
-  site$interventions$r21_booster_coverage<- 0
-
-  run_params<- pull_age_groups_time_horizon(quick_run)
-
-  # check the site has a non-zero EIR
-  check_eir(site)
-
-  # pull parameters for this site ----------------------------------------------
-  params <- site::site_parameters(
-    interventions = site$interventions,
-    demography = site$demography,
-    vectors = site$vectors,
-    seasonality = site$seasonality,
-    eir = site$eir$eir[1],
-    burnin = run_params$burnin,
-    overrides = list(human_population = run_params$pop_val)
-  )
-
-
-  # set age groups
-  params$clinical_incidence_rendering_min_ages = run_params$min_ages
-  params$clinical_incidence_rendering_max_ages = run_params$max_ages
-  params$severe_incidence_rendering_min_ages = run_params$min_ages
-  params$severe_incidence_rendering_max_ages = run_params$max_ages
-  params$age_group_rendering_min_ages = run_params$min_ages
-  params$age_group_rendering_max_ages = run_params$max_ages
-
-  # if this is a stochastic run, set parameter draw ----------------------------
-  params<- parameterize_stochastic_run(params, parameter_draw)
-
-  if(iso3c == 'ETH'){
-
-    cali_eir<- readRDS(paste0('J:/VIMC_malaria/analyses/ethiopia/calibrations/calibrated_site',site_name, '.rds' ))
-    cali_EIR<- cali_eir$eir_info$EIR
-
-    message(paste0('calibrating to EIR of ', cali_EIR))
-    params<- set_equilibrium(params, init_EIR = cali_EIR)
-
-
-  }
-
-  params$pev<- TRUE
-
-  inputs <- list(
-    'param_list' = params,
-    'site_name' = site_name,
-    'ur' = ur,
-    'iso' = iso3c,
-    'parameter_draw' = parameter_draw
-  )
-
-  return(inputs)
-
 }
 

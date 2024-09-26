@@ -20,7 +20,7 @@ analyse_site<- function(site,
                                   quick_run = site$quick_run)
 
 
-  model<- run_scenario_model(model_input, baseline_outputs)
+  model<- run_model(model_input)
   output<- process_output(model,
                           vimc_input,
                           site_data = site_data,
@@ -37,27 +37,6 @@ analyse_site<- function(site,
 
 
 
-#' model vaccine impact
-#' @param site   analysis map with input parameters
-#' @param site_data site data
-#' @param vimc_input vimc_input
-#' @returns modelled + processed output
-#' @export
-analyse_baseline<- function(site,
-                        site_data){
-
-  model_input<- pull_baseline_params(site_name = site$site_name,
-                                     ur = site$ur,
-                                     site_data = site_data,
-                                     iso3c = site$iso3c,
-                                     parameter_draw = site$parameter_draw,
-                                     quick_run = site$quick_run)
-
-
-  model<- run_baseline_model(model_input)
-
-  return(model)
-}
 
 #' make an analysis map of input parameters for vaccine modelling run
 #' @param site_df   analysis map with input parameters

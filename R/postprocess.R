@@ -3,7 +3,6 @@
 #' @param site_name site name
 #' @param ur urbanicity
 #' @param scenario vaccine scenario
-#' @param gfa global fund assumptions (true or false)
 #' @param vimc_input input file from VIMC
 #' @param description description of reason for model run
 #' @param quick_run quick run setting (boolean)
@@ -12,7 +11,7 @@
 #' @param iso3c country code
 #' @returns list of parameters for all model runs
 #' @export
-process_output<- function(model, vimc_input, site_data, site_name, ur, iso3c, scenario, gfa, parameter_draw, quick_run, description){
+process_output<- function(model, vimc_input, site_data, site_name, ur, iso3c, scenario, parameter_draw, quick_run, description){
 
   message('postprocessing')
   # calculate rates
@@ -22,7 +21,6 @@ process_output<- function(model, vimc_input, site_data, site_name, ur, iso3c, sc
             site_name = site_name,
             ur = ur,
             scenario = scenario,
-            gfa = gfa,
             description = description,
             parameter_draw = parameter_draw)
 
@@ -54,7 +52,6 @@ process_output<- function(model, vimc_input, site_data, site_name, ur, iso3c, sc
       site_name = site_name,
       ur = ur,
       scenario = scenario,
-      gfa = gfa,
       description = description,
       parameter_draw = parameter_draw)
 
@@ -163,10 +160,9 @@ vimc_postprocess<- function(output, le, iso3c, site_data, site_name, ur, vimc_po
 #' @param iso3c country code
 #' @param scenario vaccine scenario
 #' @param description reason for model run
-#' @param gfa global fund assumptions for other interventions (boolean)
 #' @param parameter_draw parameter draw
 #' @export
-format_outputs<- function(dt, iso3c, site_name, ur, scenario, gfa, description, parameter_draw){
+format_outputs<- function(dt, iso3c, site_name, ur, scenario, description, parameter_draw){
   dt <- dt |>
     mutate(
       disease = 'Malaria',
@@ -178,7 +174,6 @@ format_outputs<- function(dt, iso3c, site_name, ur, scenario, gfa, description, 
       site_name = site_name,
       urban_rural = ur,
       scenario = scenario,
-      gfa = gfa,
       description = description,
       parameter_draw = parameter_draw
     ) |>
@@ -193,7 +188,6 @@ format_outputs<- function(dt, iso3c, site_name, ur, scenario, gfa, description, 
       .data$site_name,
       .data$urban_rural,
       .data$scenario,
-      .data$gfa,
       description,
       .data$parameter_draw,
       .data$cohort_size,
