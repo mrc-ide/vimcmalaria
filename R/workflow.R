@@ -35,42 +35,30 @@ completed_reports<- function(report_name){
 #'  Make a map of input parameters for VIMC modelling
 #' @param iso3cs  countries to run models for you
 #' @param scenarios  scenarios to run models for. Default is all scenarios for the current round
-#' @param gfa global fund assumptions for coverage of other interventions (true or false)
 #' @param description reason for model run
 #' @param parameter_draws draws to run model for
 #' @param quick_run quick run setting (boolean)
 #' @export
 make_parameter_map<- function(iso3cs,
                               scenarios =  c('no-vaccination',
-                                             'malaria-r3-bluesky',
-                                             'malaria-r3-default',
-                                             'malaria-r3-r4-bluesky',
                                              'malaria-r3-r4-default',
-                                             'malaria-rts3-bluesky',
-                                             'malaria-rts3-default',
-                                             'malaria-rts3-rts4-bluesky',
                                              'malaria-rts3-rts4-default'),
-                              gfa,
                               description,
                               parameter_draws,
                               quick_run){
 
   country_map<- data.table('iso3c' = iso3cs) |>
     mutate(description = description,
-           quick_run = quick_run,
-           gfa= gfa)
+           quick_run = quick_run)
 
   full_map<- data.table()
 
   for (scen in scenarios){
     for (draw in parameter_draws){
-      for(gfas in gfa){
-        subset<- country_map|>
-          mutate(scenario = scen,
-                 parameter_draw = draw,
-                 gfa = gfas)
 
-      }
+        subset<- country_mapn|>
+          mutate(scenario = scen,
+                 parameter_draw = draw)
 
 
       full_map<- rbind(subset, full_map)
@@ -177,8 +165,7 @@ submit_by_core<- function(core, dt, test= FALSE){
                           description = description,
                           quick_run = quick_run,
                           scenario = scenario,
-                          parameter_draw = parameter_draw,
-                          gfa= gfa)),
+                          parameter_draw = parameter_draw)),
       dt)
 
   }else{
@@ -190,8 +177,7 @@ submit_by_core<- function(core, dt, test= FALSE){
                           description = description,
                           quick_run = quick_run,
                           scenario = scenario,
-                          parameter_draw = parameter_draw,
-                          gfa= gfa)),
+                          parameter_draw = parameter_draw)),
       dt,
       resources = hipercow::hipercow_resources(cores = unique(dt$site_number)))
 
@@ -212,7 +198,7 @@ pull_most_recent_output<- function(iso3c, description, quick_run){
            description == {{description}},
            quick_run == {{quick_run}}) |>
     dplyr::arrange(dplyr::desc(date_time)) |>
-    dplyr::distinct(iso3c, scenario, quick_run, parameter_draw, description, gfa, .keep_all = TRUE) |>
+    dplyr::distinct(iso3c, scenario, quick_run, parameter_draw, description, .keep_all = TRUE) |>
     dplyr::arrange(iso3c, scenario, parameter_draw)
 
 

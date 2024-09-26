@@ -6,10 +6,7 @@
 \usage{
 make_parameter_map(
   iso3cs,
-  scenarios = c("no-vaccination", "malaria-r3-bluesky", "malaria-r3-default",
-    "malaria-r3-r4-bluesky", "malaria-r3-r4-default", "malaria-rts3-bluesky",
-    "malaria-rts3-default", "malaria-rts3-rts4-bluesky", "malaria-rts3-rts4-default"),
-  gfa,
+  scenarios = c("no-vaccination", "malaria-r3-r4-default", "malaria-rts3-rts4-default"),
   description,
   parameter_draws,
   quick_run
@@ -19,8 +16,6 @@ make_parameter_map(
 \item{iso3cs}{countries to run models for you}
 
 \item{scenarios}{scenarios to run models for. Default is all scenarios for the current round}
-
-\item{gfa}{global fund assumptions for coverage of other interventions (true or false)}
 
 \item{description}{reason for model run}
 
