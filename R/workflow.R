@@ -56,7 +56,7 @@ make_parameter_map<- function(iso3cs,
   for (scen in scenarios){
     for (draw in parameter_draws){
 
-        subset<- country_mapn|>
+        subset<- country_map |>
           mutate(scenario = scen,
                  parameter_draw = draw)
 
