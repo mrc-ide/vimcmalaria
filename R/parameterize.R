@@ -189,17 +189,15 @@ update_coverage_values<- function(site, iso3c, coverage_data, scenario_name){
   }
 
   # transform booster coverage into value per person according to coverage in the preceding year
-  if(scenario_name %like% 'bluesky'){
-
-    dt[booster_coverage== 0.9, booster_coverage:= 1]
-
-  }else{
   for (yr in unique(dt$year)){
 
     dt[year== yr & coverage!= 0 & booster_coverage!= 0,
-      booster_coverage := booster_coverage / dt[year == yr- 1, booster_coverage]]
+      booster_coverage := booster_coverage / dt[year == yr- 1, coverage]]
   }
-}
+
+
+dt<- dt[is.na(booster_coverage), booster_coverage:= 0]
+
   intvns<- data.table::data.table(merge(site$interventions, dt, by = 'year', all.x= T))
   site$interventions<- intvns
 
