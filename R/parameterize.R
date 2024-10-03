@@ -196,9 +196,12 @@ update_coverage_values<- function(site, iso3c, coverage_data, scenario_name){
   }
 
 
-dt<- dt[is.na(booster_coverage), booster_coverage:= 0]
 
   intvns<- data.table::data.table(merge(site$interventions, dt, by = 'year', all.x= T))
+
+  intvns<- intvns[is.na(booster_coverage), booster_coverage:= 0]
+  intvns<- intvns[is.na(coverage), coverage:= 0]
+
   site$interventions<- intvns
 
   return(site)
