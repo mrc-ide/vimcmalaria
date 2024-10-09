@@ -1,4 +1,3 @@
-#' Return a list of the reports that have already completed from orderly metadata
 #' @param report_name  name of orderly report to extract metadata from
 #' @export
 completed_reports<- function(report_name){

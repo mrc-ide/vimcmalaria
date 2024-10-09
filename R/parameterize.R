@@ -192,7 +192,7 @@ update_coverage_values<- function(site, iso3c, coverage_data, scenario_name){
   for (yr in unique(dt$year)){
 
     dt[year== yr & coverage!= 0 & booster_coverage!= 0,
-      booster_coverage := booster_coverage / dt[year == yr- 1, coverage]]
+      booster_coverage := booster_coverage * dt[year == yr- 1, coverage]] # should we be multiplying here instead?
   }
 
 
