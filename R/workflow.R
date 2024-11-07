@@ -16,7 +16,7 @@ completed_reports<- function(report_name){
 
 
   unique(lapply(meta$parameters, names))
-  nms <- names(meta$parameters[[1]])
+  nms <- names(meta$parameters[[2]])
   pars <- do.call("data.frame", stats::setNames(lapply(nms, function(nm) sapply(meta$parameters, function(x) x[[nm]])), nms))
   pars<- data.table(pars)
   pars<- pars[, index:= c(1:.N)]
@@ -258,7 +258,7 @@ get_dose_output<- function(index, map, output_filepath){
 
   message(directory)
 
-  output<- readRDS(paste0(output_filepath, directory, '/dose_output.rds'))                  # get output file
+  output<- rbindlist(readRDS(paste0(output_filepath, directory, '/dose_output.rds')))                  # get output file
   return(output)
 }
 
@@ -316,8 +316,8 @@ compile_final_outputs<- function(descrip){
   completed<- completed_reports('postprocessing')
   completed<- completed[description == {{descrip}}] |>
     dplyr::arrange(desc(date_time)) |>
-    dplyr::distinct(iso3c, description, .keep_all = TRUE) |>
-    dplyr::arrange(iso3c, description)
+    dplyr::distinct(iso3c, description, parameter_draw, quick_run, .keep_all = TRUE) |>
+    dplyr::arrange(iso3c, description, parameter_draw, quick_run)
 
   pull_output<- function(index, map){
 
@@ -325,7 +325,7 @@ compile_final_outputs<- function(descrip){
     map<- map[ index,]
     directory_name<- map$directory_name
     iso3c<- map$iso3c
-    output<- rbindlist(readRDS(paste0('J:/VIMC_malaria/archive/postprocessing/', directory_name, '/final_output.rds')))
+    output<- rbindlist(readRDS(paste0('archive/postprocessing/', directory_name, '/final_output.rds')))
     return(output)
   }
 

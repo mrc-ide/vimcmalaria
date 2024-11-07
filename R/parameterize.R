@@ -28,6 +28,9 @@ pull_input_params<- function(site_name,
 
   run_params<- pull_age_groups_time_horizon(quick_run)
 
+  if(iso3c == 'ETH'){
+    run_params$pop_val<- 150000
+  }
   # specify vaccine coverage based on forecast  --------------------------------
   site<- expand_intervention_coverage(site,
                                       terminal_year = run_params$term_yr)
@@ -187,15 +190,6 @@ update_coverage_values<- function(site, iso3c, coverage_data, scenario_name){
       select(-RTS3, -RTS4)
 
   }
-
-  # transform booster coverage into value per person according to coverage in the preceding year
-  for (yr in unique(dt$year)){
-
-    dt[year== yr & coverage!= 0 & booster_coverage!= 0,
-      booster_coverage := booster_coverage * dt[year == yr- 1, coverage]] # should we be multiplying here instead?
-  }
-
-
 
   intvns<- data.table::data.table(merge(site$interventions, dt, by = 'year', all.x= T))
 

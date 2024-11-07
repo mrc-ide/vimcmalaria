@@ -295,8 +295,8 @@ pull_doses_output <- function(raw_output, processed_output) {
 
     doses_per_year <-raw_output |>
       dplyr::group_by(.data$year) |>
-      dplyr::summarise(n_model=mean(n_365_729),    ## average number of people in the eligible age grp (?best way to do this)
-                       doses_model=sum(n_pev_epi_booster_1)) |>
+      dplyr::summarise(n_model=mean(n_age_365_729, na.rm = TRUE),    ## average number of people in the eligible age grp (?best way to do this)
+                       doses_model=sum(n_pev_epi_booster_1, na.rm = TRUE)) |>
       mutate(rate_dosing = .data$doses_model/.data$n_model)
 
     ### Merge in VIMC pop in eligible age gp.
@@ -311,7 +311,7 @@ pull_doses_output <- function(raw_output, processed_output) {
 
     doses_per_year <-raw_output |>
       dplyr::group_by(year) |>
-      dplyr::summarise(n_model=mean(n_0_364),    ## average number of people in the eligible age grp
+      dplyr::summarise(n_model=mean(n_age_0_364),    ## average number of people in the eligible age grp
                        doses_model=sum(n_pev_epi_dose_3)) |>
       mutate(rate_dosing = doses_model/n_model)
 
@@ -550,10 +550,8 @@ site_postprocessing<- function(id, dt){
   sub<- dt |> filter(site == id)
 
   # calculate rates
-  raw_output<- drop_burnin(sub, burnin= 15 * 365)
-
   output <- postie::get_rates(
-    raw_output,
+    sub,
     time_divisor = 365,
     baseline_t = 1999,
     age_divisor = 365,
@@ -563,7 +561,10 @@ site_postprocessing<- function(id, dt){
 
   output<- output |>
   mutate(site = id,
-         site_ur = unique(raw_output$site_ur))
+         site_ur = unique(sub$site_ur),
+        scenario = unique(sub$scenario),
+      site_name = unique(sub$site_name),
+      ur = unique(sub$ur))
 
   return(output)
 }
