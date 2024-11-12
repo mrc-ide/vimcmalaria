@@ -148,12 +148,6 @@ run_local_reports<- function(map, report_name){
 #' @param test if test is true, do not request additional cores-- just to see if models complete
 #' @export
 submit_by_core<- function(core, dt, test= FALSE){
-
-  dt<- dt |>
-    dplyr::filter(site_number == core)
-
-  message(unique(dt$site_number))
-
   if(test == TRUE){
     dt <- dt |> select(-site_number)
 
@@ -167,20 +161,30 @@ submit_by_core<- function(core, dt, test= FALSE){
                           parameter_draw = parameter_draw)),
       dt)
 
-  }else{
+  }
 
-    hipercow::task_create_bulk_expr(
-      orderly2::orderly_run(
-        "process_country",
-        parameters = list(iso3c = iso3c,
-                          description = description,
-                          quick_run = quick_run,
-                          scenario = scenario,
-                          parameter_draw = parameter_draw)),
-      dt,
-      resources = hipercow::hipercow_resources(cores = unique(dt$site_number)))
+else{
+  for (i in c(1:nrow(dt))){
+    message(i)
+      subset<- dt[i,]
+  
+      message(unique(subset$site_number))
+    
+      hipercow::task_create_expr(
+        orderly2::orderly_run(
+          "process_country",
+          parameters = list(iso3c = iso3c,
+                            description = description,
+                            quick_run = quick_run,
+                            scenario = scenario,
+                            parameter_draw = parameter_draw)),
+        subset,
+        resources = hipercow::hipercow_resources(cores = unique(subset$site_number)))
+  
+    }
 
   }
+
 
   message('submitted')
 }
@@ -300,8 +304,8 @@ compile_diagnostics<- function(descrip, date_time){
     map<- map[ index,]
     directory_name<- map$directory_name
     iso3c<- map$iso3c
-    file.copy(from= paste0('J:/VIMC_malaria/archive/diagnostics/', directory_name, '/diagnostic_report_', iso3c, '.html'),
-              to= paste0('J:/VIMC_malaria/diagnostics/', iso3c, '.html'),
+    file.copy(from= paste0('archive/diagnostics/', directory_name, '/diagnostic_report_', iso3c, '.html'),
+              to= paste0('diagnostics/', iso3c, '.html'),
               overwrite = TRUE)
   }
 
