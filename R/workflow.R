@@ -320,8 +320,8 @@ compile_final_outputs<- function(descrip){
   completed<- completed_reports('postprocessing')
   completed<- completed[description == {{descrip}}] |>
     dplyr::arrange(desc(date_time)) |>
-    dplyr::distinct(iso3c, description, parameter_draw, quick_run, .keep_all = TRUE) |>
-    dplyr::arrange(iso3c, description, parameter_draw, quick_run)
+    dplyr::distinct(iso3c, description, quick_run, .keep_all = TRUE) |>
+    dplyr::arrange(iso3c, description, quick_run)
 
   pull_output<- function(index, map){
 
