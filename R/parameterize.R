@@ -160,9 +160,9 @@ update_coverage_values<- function(site, iso3c, coverage_data, scenario_name){
     coverage_data <- coverage_data |>
       dplyr::filter(country_code == iso3c) |>
       dplyr::filter(scenario == 'malaria-r3-r4-default') |>
-      mutate(scenario = 'ideal')
+      mutate(scenario = 'ideal') |>
+      data.table()
 
-    coverage_data<- coverage_data[!is.na(booster_coverage), booster_coverage:= 0.8]
     coverage_data<- coverage_data[!is.na(coverage), coverage := 0.8]
 
   } else{
