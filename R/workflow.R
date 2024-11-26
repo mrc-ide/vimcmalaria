@@ -355,19 +355,20 @@ compile_dose_outputs<- function(descrip, iso){
     map<- map[ index,]
     directory_name<- map$directory_name
     iso3c<- map$iso3c
-    output<- readRDS(paste0('J:/VIMC_malaria/archive/postprocessing/', directory_name, '/dose_output.rds'))
+    output<- rbindlist(readRDS(paste0('archive/postprocessing/', directory_name, '/dose_output.rds')))
 
 
     # then sum all doses + cases + deaths averted up to country level by year
     output<- output |>
-      group_by(year, scenario) |>
+      group_by(year, scenario, parameter_draw) |>
       summarise(cases_averted = sum(cases_averted),
                 deaths_averted = sum(deaths_averted),
                 doses_total = sum(doses_total),
                 fvp = sum(fvp),
                 .groups = 'keep') |>
       filter(doses_total != 0) |>
-      mutate(iso3c = iso3c)
+      mutate(iso3c = iso3c) |>
+      rename(run_id = parameter_draw)
 
 
     return(output)

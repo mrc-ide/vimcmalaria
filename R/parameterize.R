@@ -155,10 +155,23 @@ parameterize_stochastic_run<- function(params, parameter_draw){
 #' @export
 update_coverage_values<- function(site, iso3c, coverage_data, scenario_name){
 
+  if(scenario_name == 'ideal'){ # construct an ideal scenario where coverage is 80% everywhere
+
+    coverage_data <- coverage_data |>
+      dplyr::filter(country_code == iso3c) |>
+      dplyr::filter(scenario == 'malaria-r3-r4-default') |>
+      mutate(scenario = 'ideal')
+
+    intvns<- intvns[!is.na(booster_coverage), booster_coverage:= 0.8]
+    intvns<- intvns[!is.na(coverage), coverage := 0.8]
+
+  } else{
+
   coverage_data <- coverage_data |>
     dplyr::filter(country_code == iso3c) |>
     dplyr::filter(scenario == scenario_name)
-
+    
+  }
 
   dt <- coverage_data |>
     rename(vaccine_name = vaccine) |>
@@ -195,6 +208,7 @@ update_coverage_values<- function(site, iso3c, coverage_data, scenario_name){
 
   intvns<- intvns[is.na(booster_coverage), booster_coverage:= 0]
   intvns<- intvns[is.na(coverage), coverage:= 0]
+
 
   site$interventions<- intvns
 
