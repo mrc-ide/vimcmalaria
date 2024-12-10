@@ -338,6 +338,7 @@ compile_final_outputs<- function(descrip){
 compile_and_save<- function(description, scen){
   outputs<- vimcmalaria::compile_final_outputs(description)
 
+  library(dplyr)
   
   message(scen)
     stochastic<- outputs |> 
@@ -347,6 +348,16 @@ compile_and_save<- function(description, scen){
       select(disease, run_id, year, age, country, country_name, cohort_size, cases, deaths, dalys, yll)
   
   
+  
+  
+    message('saving stochastic')
+    for(draw in unique(stochastic$run_id)){
+      message(draw)
+  
+      stoch<- stochastic |> filter(run_id == draw)
+      write.csv(stoch, paste0('montagu/stochastic-burden-est-', scen, '_', draw, '.csv'), row.names = FALSE)
+  
+    }
   
     central<- stochastic |>
       group_by(disease, year, age, country, country_name) |>
@@ -363,16 +374,7 @@ compile_and_save<- function(description, scen){
     message('saving central')
     write.csv(central, paste0('montagu/central-burden-est-', scen, '.csv'), row.names = FALSE)
   
-    message('saving stochastic')
-    for(draw in unique(stochastic$run_id)){
-      message(draw)
-  
-      stoch<- stochastic |> filter(run_id = draw)
-      write.csv(stoch, paste0('montagu/stochastic-burden-est-', scen, '_', draw, '.csv'), row.names = FALSE)
-  
-    }
-  
-  }
+}
 #' Pull final outputs from workflow
 #' @param descrip         description of runs to pull
 #' @export
