@@ -325,11 +325,11 @@ compile_final_outputs<- function(descrip){
     map<- map[ index,]
     directory_name<- map$directory_name
     iso3c<- map$iso3c
-    output<- rbindlist(readRDS(paste0('archive/postprocessing/', directory_name, '/final_output.rds')))
+    output<- data.table::rbindlist(readRDS(paste0('archive/postprocessing/', directory_name, '/final_output.rds')))
     return(output)
   }
 
-  outputs<- rbindlist(lapply(c(1:nrow(completed)), pull_output, map = completed))
+  outputs<- data.table::rbindlist(lapply(c(1:nrow(completed)), pull_output, map = completed))
 }
 #' save final outputs from workflow
 #' @param description         description of runs to pull
