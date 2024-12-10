@@ -331,7 +331,48 @@ compile_final_outputs<- function(descrip){
 
   outputs<- rbindlist(lapply(c(1:nrow(completed)), pull_output, map = completed))
 }
+#' save final outputs from workflow
+#' @param description         description of runs to pull
+#' @param scen                scenario to save
+#' @export
+compile_and_save<- function(description, scen){
+  outputs<- vimcmalaria::compile_final_outputs(description)
 
+  
+  message(scen)
+    stochastic<- outputs |> 
+      filter(scenario == scen) |>
+      filter(run_id!= 0) |>
+      select(-scenario) |>
+      select(disease, run_id, year, age, country, country_name, cohort_size, cases, deaths, dalys, yll)
+  
+  
+  
+    central<- stochastic |>
+      group_by(disease, year, age, country, country_name) |>
+      summarise(cohort_size= cohort_size,
+                cases= mean(cases),
+                deaths= mean(deaths),
+                dalys= mean(dalys),
+                yll= mean(yll),
+              .groups = 'keep') |>
+      select(disease, year, age, country, country_name, cohort_size, cases, deaths, dalys, yll) |>
+      unique()
+    
+    # save outputs
+    message('saving central')
+    write.csv(central, paste0('montagu/central-burden-est-', scen, '.csv'), row.names = FALSE)
+  
+    message('saving stochastic')
+    for(draw in unique(stochastic$run_id)){
+      message(draw)
+  
+      stoch<- stochastic |> filter(run_id = draw)
+      write.csv(stoch, paste0('montagu/stochastic-burden-est-', scen, '_', draw, '.csv'), row.names = FALSE)
+  
+    }
+  
+  }
 #' Pull final outputs from workflow
 #' @param descrip         description of runs to pull
 #' @export

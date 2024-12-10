@@ -163,7 +163,7 @@ update_coverage_values<- function(site, iso3c, coverage_data, scenario_name){
       mutate(scenario = 'ideal') |>
       data.table()
 
-    coverage_data<- coverage_data[!is.na(coverage), coverage := 0.8]
+    coverage_data<- coverage_data[!is.na(coverage), coverage := 0.9] # seems to be the last provided ideal target
 
   } else{
 
