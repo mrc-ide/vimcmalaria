@@ -12,6 +12,7 @@ analyse_site<- function(site,
 
   model_input<- pull_input_params(site_name = site$site_name,
                                   ur = site$ur,
+                                  country= site$country,
                                   site_data = site_data,
                                   coverage_data = vimc_input$coverage_input,
                                   scenario = site$scenario,
@@ -51,7 +52,7 @@ make_analysis_map<- function(site_df,
                              run_all){
 
   site_data$prevalence<- site_data$prevalence |>
-    dplyr::filter(year == 2019) |>
+    dplyr::filter(year == 2024) |>
     mutate(run_model = ifelse(pfpr > 0.10, TRUE, FALSE))
 
   # make exceptions for Madagascar, Ethiopia, and Sudan

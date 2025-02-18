@@ -13,6 +13,7 @@
 pull_input_params<- function(site_name,
                              ur,
                              iso3c,
+                             country,
                              site_data,
                              coverage_data,
                              scenario,
@@ -21,10 +22,15 @@ pull_input_params<- function(site_name,
 
   message('parameterizing')
   # site data
-  site <- extract_site(site_file = site_data,
-                       site_name = site_name,
-                       ur = ur)
-
+site <- site::subset_site(
+  site = site_data,
+  site_filter = data.frame(
+    country= country,
+    iso3c = iso3c,
+    name_1 = site_name,
+    urban_rural =  ur
+  )
+)
 
   run_params<- pull_age_groups_time_horizon(quick_run)
 
@@ -46,9 +52,9 @@ pull_input_params<- function(site_name,
   params <- site::site_parameters(
     interventions = site$interventions,
     demography = site$demography,
-    vectors = site$vectors,
-    seasonality = site$seasonality,
-    eir = site$eir$eir[1],
+    vectors = site$vectors$vector_species,
+    seasonality = site$seasonality$seasonality_parameters,
+    eir = site$eir$eir,
     burnin = run_params$burnin,
     overrides = list(human_population = run_params$pop_val)
   )
@@ -64,17 +70,6 @@ pull_input_params<- function(site_name,
 
   # if this is a stochastic run, set parameter draw ------------------------------
   params<- parameterize_stochastic_run(params, parameter_draw)
-
-  if(iso3c == 'ETH'){
-
-    cali_eir<- readRDS(paste0('J:/VIMC_malaria/analyses/ethiopia/calibrations/calibrated_site',site_name, '.rds' ))
-    cali_EIR<- cali_eir$eir_info$EIR
-
-    message(paste0('calibrating to EIR of ', cali_EIR))
-    params<- set_equilibrium(params, init_EIR = cali_EIR)
-
-
-  }
 
   params$pev<- TRUE
 
@@ -150,65 +145,47 @@ parameterize_stochastic_run<- function(params, parameter_draw){
 #' @param   site             site data file
 #' @param   iso3c            country to update coverage values for
 #' @param   coverage_data    VIMC vaccine forecast for site of interest
-#' @param scenario_name scenario for vaccine forecast
-#' @returns site file with additional variables 'rtss_coverage', 'rtss_booster_coverage', 'r21_coverage', 'r21_booster_coverage'
+#' @param   scenario_name scenario for vaccine forecast
+#' @returns site file with variables 'rtss_cov', 'rtss_booster', 'r21_cov', 'r21_booster'
 #' @export
 update_coverage_values<- function(site, iso3c, coverage_data, scenario_name){
-
-  if(scenario_name == 'ideal'){ # construct an ideal scenario where coverage is 80% everywhere
-
-    coverage_data <- coverage_data |>
-      dplyr::filter(country_code == iso3c) |>
-      dplyr::filter(scenario == 'malaria-r3-r4-default') |>
-      mutate(scenario = 'ideal') |>
-      data.table()
-
-    coverage_data<- coverage_data[!is.na(coverage), coverage := 0.9] # seems to be the last provided ideal target
-
-  } else{
 
   coverage_data <- coverage_data |>
     dplyr::filter(country_code == iso3c) |>
     dplyr::filter(scenario == scenario_name)
     
-  }
 
   dt <- coverage_data |>
-    rename(vaccine_name = vaccine) |>
-    data.table()
+    mutate(vaccine_name = ifelse(vaccine %like% 'RTS', 'RTS,S', 'R21'))
 
-  # add identifying type column for vaccine
-  dt[{{vaccine_name}} %like% 'RTS', vaccine := 'RTS,S']
-  dt[is.na(vaccine), vaccine := 'R21']
-
-  vaccine_val<- unique(dt$vaccine)
+  vaccine_val<- unique(dt$vaccine_name)
 
   if (length(vaccine_val) > 1){ stop('Can only implement one type of vaccine at a time. Check vaccine inputs.') }
 
   dt<- data.table::dcast(data.table::data.table(dt),
-             year + vaccine ~ vaccine_name,
+             year + vaccine_name ~ vaccine,
              value.var= 'coverage')
 
   
   if(vaccine_val == 'R21'){
     dt<- dt |>
-      mutate(coverage = R3,
-             booster_coverage = R4) |>
-      select(-R3, -R4)
+      rename(r21_cov = R3,
+             r21_booster = R4) |>
+      mutate(rtss_cov = 0)
 
   }else{
     dt<- dt |>
-      mutate(coverage = RTS3,
-             booster_coverage = RTS4) |>
-      select(-RTS3, -RTS4)
+      mutate(rtss_cov = RTS3,
+             rtss_booster = RTS4) |>
+      mutate(r21_cov = 0)
 
   }
 
+  # site file includes coverage data until 2024, remove this or set to zero for counterfactual analysis
+  site$interventions<- site$interventions |>
+    select(-rtss_cov, -r21_cov)
+
   intvns<- data.table::data.table(merge(site$interventions, dt, by = 'year', all.x= T))
-
-  intvns<- intvns[is.na(booster_coverage), booster_coverage:= 0]
-  intvns<- intvns[is.na(coverage), coverage:= 0]
-
 
   site$interventions<- intvns
 
@@ -245,60 +222,8 @@ expand_intervention_coverage<- function(site, terminal_year){
     site$interventions <- intvns
 
   }
-
-
   site$interventions <- site$interventions |>
     scene::fill_extrapolate(group_var = group_var)
 
   return(site)
 }
-
-#' Very basic recalibration function (for Ethiopia sites)
-#' @param   params           simulation parameters
-#' @param   site_name        name of site to recalibrate
-#' @param   site_dt site data
-#' @returns recalibrated site
-#' @export
-recalibrate<- function(params, site_name, site_dt){
-
-
-  summary_mean_pfpr_2_10 <- function (x) {
-    message('calibrating')
-    x<- data.table(x)
-    # Calculate the PfPR2-10:
-    prev_2_10 <- mean(x[timestep %in% c((10*365):(11*365))]$n_detect_pcr_730_3649/x[timestep %in% c((10*365):(11* 365))]$n_730_3649) # average over a year
-
-    # Return the calculated PfPR2-10:
-    return(prev_2_10)
-  }
-
-  # pull target pfpr from 2010 for corresponding site
-  target_pfpr <- site_dt$prevalence |> dplyr::filter(year == 2010, name_1 == site_name) |> dplyr::pull(pfpr)
-
-  print(paste0('target pfpr ', target_pfpr ))
-
-  # Add a parameter to the parameter list specifying the number of timesteps
-  simparams<- copy(params)
-  simparams$timesteps <- 12 * 365
-
-  # Establish a tolerance value:
-  pfpr_tolerance <- 0.01
-
-  # Set upper and lower EIR bounds for the calibrate function to check
-  lower_EIR <- 0.01; upper_EIR <- 60
-
-  # Run the calibrate() function:
-  cali_EIR <- cali::calibrate(target = target_pfpr,
-                        summary_function = summary_mean_pfpr_2_10,
-                        parameters = simparams,
-                        tolerance = pfpr_tolerance,
-                        low = lower_EIR, high = upper_EIR)
-
-  print(paste0('calibrated EIR for site ', site_name, ' :', cali_EIR))
-
-  params<- set_equilibrium(params, init_EIR = cali_EIR)
-  eir_info<- data.frame('site_name' = site_name, 'EIR' = cali_EIR)
-
-  return(list('params' = params, 'eir_info' = eir_info))
-}
-
