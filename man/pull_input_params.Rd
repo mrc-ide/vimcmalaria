@@ -8,6 +8,7 @@ pull_input_params(
   site_name,
   ur,
   iso3c,
+  country,
   site_data,
   coverage_data,
   scenario,

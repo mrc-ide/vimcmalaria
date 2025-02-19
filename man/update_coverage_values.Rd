@@ -16,7 +16,7 @@ update_coverage_values(site, iso3c, coverage_data, scenario_name)
 \item{scenario_name}{scenario for vaccine forecast}
 }
 \value{
-site file with additional variables 'rtss_coverage', 'rtss_booster_coverage', 'r21_coverage', 'r21_booster_coverage'
+site file with variables 'rtss_cov', 'rtss_booster', 'r21_cov', 'r21_booster'
 }
 \description{
 update vaccine coverage based on VIMC inputs from Montagu
