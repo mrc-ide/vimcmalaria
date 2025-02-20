@@ -2,9 +2,9 @@
 % Please edit documentation in R/postprocess.R
 \name{scale_population}
 \alias{scale_population}
-\title{scale site file population to be consistent with country population input from VIMC}
+\title{scale admin-1 populations to be sum to country population input from VIMC}
 \usage{
-scale_population(site_data, site_name, ur, iso3c, vimc_pop, pop_single_yr)
+scale_population(site_data, site_name, ur, iso3c, vimc_pop)
 }
 \arguments{
 \item{site_data}{site file}
@@ -16,9 +16,7 @@ scale_population(site_data, site_name, ur, iso3c, vimc_pop, pop_single_yr)
 \item{iso3c}{country of interest}
 
 \item{vimc_pop}{VIMC population input}
-
-\item{pop_single_yr}{single-year age group VIMC population input}
 }
 \description{
-scale site file population to be consistent with country population input from VIMC
+scale admin-1 populations to be sum to country population input from VIMC
 }

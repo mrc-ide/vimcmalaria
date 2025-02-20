@@ -1,3 +1,4 @@
+#'  check what reports completed (must be in orderly parent directory)
 #' @param report_name  name of orderly report to extract metadata from
 #' @export
 completed_reports<- function(report_name){

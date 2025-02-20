@@ -70,7 +70,6 @@ make_analysis_map<- function(site_df,
 
 
   }
-
   if(unique(site_df$country) == 'Sudan'){
 
     site_data$prevalence <- site_data$prevalence |>
