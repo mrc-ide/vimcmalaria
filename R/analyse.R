@@ -88,8 +88,8 @@ make_analysis_map<- function(site_df,
            parameter_draw = {{parameter_draw}})
 
 
-  Encoding(site_info$site_name) <- "UTF-8"
-  site_info$site_name<- iconv(site_info$site_name, from="UTF-8", to="ASCII//TRANSLIT")
+  # Encoding(site_info$site_name) <- "UTF-8"
+  # site_info$site_name<- iconv(site_info$site_name, from="UTF-8", to="ASCII//TRANSLIT")
 
   if (test == TRUE) { site_info<- site_info[1:2,] }
 
