@@ -354,7 +354,7 @@ pull_low_transmission_sites<- function(iso3c, site_data, processed_sites){
 
   # pull site output for no-vaccination for the low transmission settings
   site_data$prevalence <- site_data$prevalence |>
-    dplyr::filter(year == 2019) |>
+    dplyr::filter(year == 2024) |>
     mutate(run_model = ifelse(pfpr > 0.10, TRUE, FALSE))
 
   # make exceptions for Madagascar, Ethiopia, and Sudan
