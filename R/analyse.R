@@ -53,29 +53,15 @@ make_analysis_map<- function(site_df,
 
   site_data$prevalence<- site_data$prevalence |>
     dplyr::filter(year == 2024) |>
-    mutate(run_model = ifelse(pfpr > 0.10, TRUE, FALSE))
+    dplyr::mutate(run_model = ifelse(pfpr > 0.10, TRUE, FALSE)) |>
+    mutate(run_model = ifelse(name_1 == 'Toliary', TRUE, run_model)) |> #hardcoded exceptions
+    mutate(run_model = ifelse(name_1 %like% 'Gambela', TRUE, run_model)) |>
+    mutate(run_model = ifelse(name_1 %like% 'Bay', TRUE, run_model)) |>
+    mutate(run_model = ifelse(name_1 %like% 'Nouakchott', TRUE, run_model)) |>
+    mutate(run_model = ifelse(name_1 %like% 'Bolama', TRUE, run_model)) |>
+    mutate(run_model = ifelse(name_1 == 'South Darfur', TRUE, run_model)) |>
+    mutate(run_model = ifelse(name_1 == 'West Kurdufan', TRUE, run_model))
 
-  # make exceptions for Madagascar, Ethiopia, and Sudan
-  # hardcode for time's sake but operationalize later
-  if(unique(site_df$country) == 'Madagascar'){
-
-    site_data$prevalence <- site_data$prevalence |>
-      mutate(run_model = ifelse(name_1 == 'Toliary', TRUE, run_model))
-  }
-
-  if(unique(site_df$country) == 'Ethiopia'){
-
-    site_data$prevalence <- site_data$prevalence |>
-      mutate(run_model = ifelse(name_1 %like% 'Gambela', TRUE, run_model))
-
-
-  }
-  if(unique(site_df$country) == 'Sudan'){
-
-    site_data$prevalence <- site_data$prevalence |>
-      mutate(run_model = ifelse(name_1 == 'South Darfur', TRUE, run_model)) |>
-      mutate(run_model = ifelse(name_1 == 'West Kurdufan', TRUE, run_model))
-  }
 
   prevalence<- site_data$prevalence |>
     select(name_1, urban_rural, iso3c, run_model) |>
@@ -88,22 +74,15 @@ make_analysis_map<- function(site_df,
 
   site_info<- merge(prevalence, site_df, by = c('site_name', 'ur', 'iso3c'))
 
-  if(nrow(prevalence) < nrow(site_info)){
-    stop('dropped admin units, debug')
-  }
+  if(nrow(prevalence) < nrow(site_info)){ stop('dropped admin units, debug')}
 
   if(scenario == 'no-vaccination' | run_all == TRUE){
-
     site_info<- site_info |>
       mutate(run_model = TRUE)
-
   }
 
   site_info<- site_info |>
-    dplyr::filter(run_model == TRUE)
-
-
-  site_info<- site_info |>
+    dplyr::filter(run_model == TRUE) |>
     mutate(scenario = {{scenario}},
            quick_run = {{quick_run}},
            parameter_draw = {{parameter_draw}})
@@ -112,11 +91,8 @@ make_analysis_map<- function(site_df,
   Encoding(site_info$site_name) <- "UTF-8"
   site_info$site_name<- iconv(site_info$site_name, from="UTF-8", to="ASCII//TRANSLIT")
 
-  if (test == TRUE) {
+  if (test == TRUE) { site_info<- site_info[1:2,] }
 
-    site_info<- site_info[1:2,]
-
-  }
   sites<- purrr::map(.x = c(1:nrow(site_info)), .f= ~ site_info[.x,])
 
   return(sites)

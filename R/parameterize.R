@@ -31,7 +31,6 @@ site <- site::subset_site(
     urban_rural =  ur
   )
 )
-
   run_params<- pull_age_groups_time_horizon(quick_run)
 
   if(iso3c == 'ETH'){
@@ -153,7 +152,6 @@ update_coverage_values<- function(site, iso3c, coverage_data, scenario_name){
   coverage_data <- coverage_data |>
     dplyr::filter(country_code == iso3c) |>
     dplyr::filter(scenario == scenario_name)
-    
 
   dt <- coverage_data |>
     mutate(vaccine_name = ifelse(vaccine %like% 'RTS', 'RTS,S', 'R21'))

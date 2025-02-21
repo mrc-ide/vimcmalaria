@@ -353,28 +353,19 @@ reformat_output<- function(output){
 pull_low_transmission_sites<- function(iso3c, site_data, processed_sites){
 
   # pull site output for no-vaccination for the low transmission settings
-  site_data$prevalence <- site_data$prevalence |>
+
+  site_data$prevalence<- site_data$prevalence |>
     dplyr::filter(year == 2024) |>
-    mutate(run_model = ifelse(pfpr > 0.10, TRUE, FALSE))
+    dplyr::mutate(run_model = ifelse(pfpr > 0.10, TRUE, FALSE)) |>
+    mutate(run_model = ifelse(name_1 == 'Toliary', TRUE, run_model)) |> #hardcoded exceptions
+    mutate(run_model = ifelse(name_1 %like% 'Gambela', TRUE, run_model)) |>
+    mutate(run_model = ifelse(name_1 %like% 'Bay', TRUE, run_model)) |>
+    mutate(run_model = ifelse(name_1 %like% 'Nouakchott', TRUE, run_model)) |>
+    mutate(run_model = ifelse(name_1 %like% 'Bolama', TRUE, run_model)) |>
+    mutate(run_model = ifelse(name_1 == 'South Darfur', TRUE, run_model)) |>
+    mutate(run_model = ifelse(name_1 == 'West Kurdufan', TRUE, run_model))
 
-  # make exceptions for Madagascar, Ethiopia, and Sudan
-  # hardcode for time's sake but operationalize later
-  if (unique(site_data$prevalence$country) == 'Madagascar') {
-    site_data$prevalence <- site_data$prevalence |>
-      mutate(run_model = ifelse(name_1 == 'Toliary', TRUE, run_model))
-  }
 
-  if (unique(site_data$prevalence$country) == 'Ethiopia') {
-    site_data$prevalence <- site_data$prevalence |>
-      mutate(run_model = ifelse(name_1 %like% 'Gambela', TRUE, run_model))
-  }
-
-  if (unique(site_data$prevalence$country) == 'Sudan') {
-    site_data$prevalence <- site_data$prevalence |>
-      mutate(run_model = ifelse(name_1 == 'South Darfur', TRUE, run_model)) |>
-      mutate(run_model = ifelse(name_1 == 'West Kurdufan', TRUE, run_model))
-
-  }
   if (length(unique(site_data$prevalence$run_model)) ==  1 &
       site_data$prevalence$run_model[1] == TRUE) {
 
@@ -389,7 +380,6 @@ pull_low_transmission_sites<- function(iso3c, site_data, processed_sites){
     site_info<- prevalence |>
       dplyr::filter(iso3c == {{iso3c}},
              run_model == FALSE)
-
 
     append <- data.table()
     message(paste0('adding ', nrow(site_info), ' sites'))
