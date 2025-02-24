@@ -53,7 +53,7 @@ site <- site::subset_site(
     demography = site$demography,
     vectors = site$vectors$vector_species,
     seasonality = site$seasonality$seasonality_parameters,
-    eir = site$eir$eir,
+    eir = site$eir$eir[1],
     burnin = run_params$burnin,
     overrides = list(human_population = run_params$pop_val)
   )

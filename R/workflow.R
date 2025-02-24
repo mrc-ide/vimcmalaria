@@ -98,9 +98,9 @@ check_reports_completed<- function(report_name, map, date_time){
 #' Return a list of the reports that are not a rerun based on orderly metadata
 #' @param report_name  name of orderly report to extract metadata from
 #' @param map  parameter map for reports you would like to crossreference
-#' @param date_time check if reports completed after a certain date, format YYYYMMDDHHMMSS
+#' @param date check if reports completed after a certain date, format YYYYMMDDHHMMSS
 #' @export
-check_not_a_rerun<- function(report_name, map, date_time){
+check_not_a_rerun<- function(report_name, map, date){
 
   counts<- map |>
     select(scenario, iso3c, site_number)
@@ -110,7 +110,7 @@ check_not_a_rerun<- function(report_name, map, date_time){
   completed<- completed_reports(report_name)
   completed<- completed |>
     select(-directory_name)|>
-    dplyr::filter(date_time >= {{date_time}}) |>
+    dplyr::filter(date_time >= date) |>
     select(-date_time)
 
   different<- setdiff(map, completed)
