@@ -361,12 +361,12 @@ reformat_output<- function(output){
 #' @param iso3c            country code
 #' @param site_data        site data
 #' @export
-pull_low_transmission_sites<- function(iso3c, site_data, processed_sites){
+pull_low_transmission_sites<- function(iso3c, site_data, processed_sites, threshold){
 
   # pull site output for no-vaccination for the low transmission settings
   site_data$prevalence <- site_data$prevalence |>
     dplyr::filter(year == 2019) |>
-    mutate(run_model = ifelse(pfpr > 0.10, TRUE, FALSE))
+    mutate(run_model = ifelse(pfpr > threshold, TRUE, FALSE))
 
   # make exceptions for Madagascar, Ethiopia, and Sudan
   # hardcode for time's sake but operationalize later
@@ -416,6 +416,45 @@ pull_low_transmission_sites<- function(iso3c, site_data, processed_sites){
   return(append)
 }}
 
+#' Function for a data request from Gates Foundation
+#' Typically, in VIMC modelling vaccines are administered to all admin units above PFPR of 10% in 2019
+#' Raise threshold for extra analysis to 35% 
+#' @param intvn         site level output for intervention sites
+#' @param threshold     PFPR cutoff for vaccine administration
+#' @param site_data        site data
+#' @export
+subset_high_transmission_sites<- function(intvn, threshold, site_data){
+# pull site output for no-vaccination for the low transmission settings
+site_data$prevalence <- site_data$prevalence |>
+  dplyr::filter(year == 2019) |>
+  mutate(run_model = ifelse(pfpr > threshold, TRUE, FALSE))
+
+site_info <- site_data$prevalence |>
+  select(name_1, urban_rural, iso3c, run_model) |>
+  rename(site_name = name_1,
+         ur = urban_rural) |>
+  dplyr::filter(run_model == TRUE) |>
+  mutate(site_ur = paste0(site_name,'_', ur))
+
+# if this is an intervention site, remove results for admin units falling below the threshold
+vaccine_sites<- data.table()
+  
+for (scen in unique(intvn$scenario)){
+  message(scen)
+  subset<- intvn |>
+    mutate(site_ur = paste0(site_name, '_', urban_rural)) |>
+    filter(scenario == scen) 
+
+  if (scen != 'no-vaccination'){
+    subset<- subset |>
+      filter(site_ur %in% unique(site_info$site_ur))
+    }
+  
+  vaccine_sites<- rbind(vaccine_sites, subset, fill= TRUE)
+}
+
+return(vaccine_sites)
+}
 
 #' Append output from low-transmission admin units to full dataset
 #' @param low_transmission low-transmission output
@@ -433,9 +472,7 @@ append_low_transmission_sites <- function(low_transmission, intvn){
     if(scen != 'no-vaccination'){
 
       message('appending')
-      append<- data.table::copy(low_transmission)
-
-      append<- append |>
+      append<- data.table::copy(low_transmission) |>
         mutate(scenario = scen)
 
       full<- rbind(output, append, fill = TRUE)
