@@ -1,3 +1,4 @@
+#' Pull completed reports based on orderly documentaiton
 #' @param report_name  name of orderly report to extract metadata from
 #' @export
 completed_reports<- function(report_name){
