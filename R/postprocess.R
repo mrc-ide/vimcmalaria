@@ -489,11 +489,11 @@ scale_cases<- function(dt, site_data, scaling_data){
   pre_scale<- scaling_data |>
     dplyr::group_by(year) |>
     dplyr::summarise(cases = sum(cases)) |>
-    dplyr::filter(year %in% c(2018:2020))
+    dplyr::filter(year %in% c(2021:2024))
 
   #average site file cases across last three years
   site_file_cases<- data.table::data.table(site_data$cases_deaths[, c('year', 'wmr_cases')])
-  site_file_cases<- site_file_cases[year %in% c(2018:2020)]
+  site_file_cases<- site_file_cases[year %in% c(2021:2024)]
 
   scaling_cases<- merge(site_file_cases, pre_scale, by = 'year')
   scaling_cases<- scaling_cases |>
