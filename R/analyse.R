@@ -52,30 +52,13 @@ make_analysis_map<- function(site_df,
 
   site_data$prevalence<- site_data$prevalence |>
     dplyr::filter(year == 2019) |>
-    mutate(run_model = ifelse(pfpr > 0.10, TRUE, FALSE))
+    mutate(run_model = ifelse(pfpr > 0.10, TRUE, FALSE)) |>
+    mutate(run_model = ifelse(name_1 == 'Toliary', TRUE, run_model)) |>
+    mutate(run_model = ifelse(name_1 %like% 'Gambela', TRUE, run_model)) |>
+    mutate(run_model = ifelse(name_1 == 'South Darfur', TRUE, run_model)) |>
+    mutate(run_model = ifelse(name_1 == 'West Kurdufan', TRUE, run_model))
+  
 
-  # make exceptions for Madagascar, Ethiopia, and Sudan
-  # hardcode for time's sake but operationalize later
-  if(unique(site_df$country) == 'Madagascar'){
-
-    site_data$prevalence <- site_data$prevalence |>
-      mutate(run_model = ifelse(name_1 == 'Toliary', TRUE, run_model))
-  }
-
-  if(unique(site_df$country) == 'Ethiopia'){
-
-    site_data$prevalence <- site_data$prevalence |>
-      mutate(run_model = ifelse(name_1 %like% 'Gambela', TRUE, run_model))
-
-
-  }
-
-  if(unique(site_df$country) == 'Sudan'){
-
-    site_data$prevalence <- site_data$prevalence |>
-      mutate(run_model = ifelse(name_1 == 'South Darfur', TRUE, run_model)) |>
-      mutate(run_model = ifelse(name_1 == 'West Kurdufan', TRUE, run_model))
-  }
 
   prevalence<- site_data$prevalence |>
     select(name_1, urban_rural, iso3c, run_model) |>
