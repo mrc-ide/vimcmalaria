@@ -4,14 +4,14 @@
 \alias{check_not_a_rerun}
 \title{Return a list of the reports that are not a rerun based on orderly metadata}
 \usage{
-check_not_a_rerun(report_name, map, date_time)
+check_not_a_rerun(report_name, map, date)
 }
 \arguments{
 \item{report_name}{name of orderly report to extract metadata from}
 
 \item{map}{parameter map for reports you would like to crossreference}
 
-\item{date_time}{check if reports completed after a certain date, format YYYYMMDDHHMMSS}
+\item{date}{check if reports completed after a certain date, format YYYYMMDDHHMMSS}
 }
 \description{
 Return a list of the reports that are not a rerun based on orderly metadata
