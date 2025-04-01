@@ -440,8 +440,8 @@ scale_par<- function(processed_output,
   print(names(le_africa))
   pars<- pars |>
     dplyr::filter(iso3c == {{iso3c}}) |>
-    mutate(scaling_ratio = proportion_risk/ model_proportion_risk) |>
-    rename(country = iso3c)
+    mutate(scaling_ratio = proportion_risk/ model_proportion_risk)  # maybe I should scale both incidence and deaths here
+
 
   processed_output<- merge(pars, processed_output, by = 'country')
   processed_output<- merge(processed_output, le_africa, by = 'age')
@@ -484,29 +484,34 @@ add_proportions<- function(dt){
 #' @param site_data site file
 #' @param scaling_data data used to scale (from no-vaccine scenario)
 #' @export
-scale_cases<- function(dt, site_data, scaling_data){
+scale_cases_deaths<- function(dt, site_data, scaling_data){
 
   pre_scale<- scaling_data |>
     dplyr::group_by(year) |>
-    dplyr::summarise(cases = sum(cases)) |>
-    dplyr::filter(year %in% c(2021:2024))
+    dplyr::summarise(cases = sum(cases),
+                    deaths= sum(deaths)) |>
+    dplyr::filter(year %in% c(2021:2023))
 
   #average site file cases across last three years
-  site_file_cases<- data.table::data.table(site_data$cases_deaths[, c('year', 'wmr_cases')])
-  site_file_cases<- site_file_cases[year %in% c(2021:2024)]
+  site_file_cases<- data.table::data.table(site_data$cases_deaths[, c('year', 'wmr_cases', 'wmr_deaths')])
+  site_file_cases<- site_file_cases[year %in% c(2021:2023)]
 
   scaling_cases<- merge(site_file_cases, pre_scale, by = 'year')
   scaling_cases<- scaling_cases |>
-    mutate(ratio= wmr_cases/ cases)
+    mutate(case_ratio= wmr_cases/ cases,
+           death_ratio = wmr_deaths/deaths) |>
+    summarise(case_ratio = mean(case_ratio),
+              death_ratio = mean(death_ratio))
 
-  ratio<- mean(scaling_cases$ratio)
 
   # add pre-scaled cases to output df as a new column
   dt<- dt |>
-    mutate(pre_scaled_cases = cases)
+    mutate(pre_scaled_cases = cases,
+           pre_scaled_deaths= deaths)
 
   dt<- dt |>
-    mutate(cases = cases * ratio)
+    mutate(cases = cases * scaling_cases$case_ratio,
+           deaths = deaths * scaling_cases$death_ratio)
 
   dt<- dt|>
     mutate(clinical= cases/cohort_size,
