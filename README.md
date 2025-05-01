@@ -52,9 +52,7 @@ This package contains helper functions for [VIMC_malaria](https://github.com/mrc
 |   |   ├── process_output
 |   |   ├── add_proportions
 |   |   ├── scale_cases_deaths
-|   |   ├── site_postprocessing
-|   ├── diagnostics                      # Generate an Rmarkdown as a diagnostic report of vaccine impact results
-|   |   ├── diagnostics.R                   
+|   |   ├── site_postprocessing               
 └── README.md                            # Project overview
 
 
