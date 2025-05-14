@@ -169,20 +169,18 @@ update_coverage_values<- function(site, iso3c, coverage_data, scenario_name){
     dt<- dt |>
       rename(r21_cov = R3,
              r21_booster = R4) |>
-      select(-R3, -R4) |>
-        mutate(r21_cov = ifelse(NA, 0, r21_cov),
-      r21_booster = ifelse(NA, 0, r21_booster)) |>
+        mutate(r21_cov = ifelse(is.na(r21_cov), 0, r21_cov),
+              r21_booster = ifelse(is.na(r21_booster), 0, r21_booster)) |>
       mutate(rtss_cov = 0,
              rtss_booster= 0)
 
   }else{
 
     dt<- dt |>
-      mutate(rtss_cov = RTS3,
+      rename(rtss_cov = RTS3,
              rtss_booster = RTS4) |>
       mutate(rtss_cov = ifelse(is.na(rtss_cov), 0, rtss_cov),
              rtss_booster = ifelse(is.na(rtss_booster), 0, rtss_booster)) |>
-      select(-RTS3, -RTS4) |>
       mutate(r21_cov = 0,
              r21_booster = 0)
 
