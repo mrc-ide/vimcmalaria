@@ -4,11 +4,26 @@
 #' @return sites component of site file with only sites that will be modelled
 #' @export
 remove_zero_eirs<- function(iso3c, sites){
-  eirs<- data.table::data.table(sites$eir)  # sites for country of interest
-  eirs<- eirs[eirs$sp == 'pf' & eirs$eir == 0, ]
-  remove<- eirs[, c('name_1', 'urban_rural')]
 
-  site<- sites$sites
+  if(nrow(sites$eir) != nrow(sites$sites)){
+
+    full_sites<- sites$sites |>
+      mutate(site_ur := paste0(name_1, '_', urban_rural))
+    
+
+
+    full_eirs<- sites$eir |>
+      mutate(site_ur := paste0(name_1, '_', urban_rural))
+
+
+    no_eir<- setdiff(unique(full_sites$site_ur), unique(full_eirs$site_ur))
+
+    remove<- full_sites |>
+      filter(site_ur %in% no_eir) |>
+      as.data.table()
+  }
+
+  site<- data.table(sites$sites)
   if (nrow(remove) > 0){
     for (i in 1:nrow(remove)) {
       message(paste0('removing site ', i))
@@ -19,21 +34,6 @@ remove_zero_eirs<- function(iso3c, sites){
   }
   return(site)
 }
-
-#' Check that the EIR of the site of interest is not zero
-#' @param site   site file
-#' @return sites component of site file with only sites that will be modelled
-#' @export
-check_eir<- function(site){
-  if(site$eir$eir[[1]] == 0){
-
-    stop('Can not model this site beause PfPR EIR is equal to zero. Note this site/ urbanicity combination and exclude from future model runs.')
-
-  }
-}
-
-
-
     
     
     
