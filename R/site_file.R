@@ -41,3 +41,47 @@ remove_zero_eirs<- function(iso3c, sites){
 
 
 
+#' Check that the EIR of the site of interest is not zero
+#' @param site   site file
+#' @return sites component of site file with only sites that will be modelled
+#' @export
+check_eir<- function(site){
+  if(site$eir$eir[[1]] == 0){
+
+    stop('Can not model this site beause PfPR EIR is equal to zero. Note this site/ urbanicity combination and exclude from future model runs.')
+
+  }
+}
+
+#' Extract a single site input from a country site file
+#' @param site_file  Country site file
+#' @param site_name  name of site to extract
+#' @param ur urbanicity of site to extract
+#' @return Single site
+#' @export
+extract_site <- function(site_file, site_name, ur){
+
+  sites<- data.table::data.table(site_file$sites)
+  Encoding(sites$name_1) <- "UTF-8"
+
+  sites$name_1<- iconv(sites$name_1, from="UTF-8", to="ASCII//TRANSLIT")
+
+  index_site <- sites[name_1== site_name & urban_rural== ur]
+
+  to_mod <- c("sites", "interventions", "pyrethroid_resistance", "population",
+              "vectors", "seasonality", "prevalence", "eir")
+
+  site <- site_file
+
+  for(level in to_mod){
+    mod<- site[[level]]
+    Encoding(mod$name_1) <- "UTF-8"
+
+    mod$name_1<- iconv(mod$name_1, from="UTF-8", to="ASCII//TRANSLIT")
+
+    mc <- intersect(colnames(index_site), colnames(mod))
+    site[[level]] <- dplyr::left_join(index_site, mod, by = mc)
+  }
+
+  return(site)
+}
