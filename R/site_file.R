@@ -21,17 +21,17 @@ remove_zero_eirs<- function(iso3c, sites){
     remove<- full_sites |>
       filter(site_ur %in% no_eir) |>
       as.data.table()
-  }
+  
 
   site<- data.table(sites$sites)
-  if (nrow(remove) > 0){
-    for (i in 1:nrow(remove)) {
-      message(paste0('removing site ', i))
-      site<- site[!(site$name_1== remove[i, name_1] & site$urban_rural == remove[i, urban_rural]), ]
-    }
-  } else{
-    message('No zero eir sites to remove')
+  for (i in 1:nrow(remove)) {
+    message(paste0("removing site ", i))
+    site <- site[!(site$name_1 == remove[i, name_1] & site$urban_rural == remove[i, urban_rural]), ]
   }
+} else {
+  message("No zero eir sites to remove")
+}
+
   return(site)
 }
     
