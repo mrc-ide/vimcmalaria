@@ -32,7 +32,7 @@ remove_zero_eirs<- function(iso3c, sites){
   message("No zero eir sites to remove")
 }
 
-  return(site)
+  return(data.table(sites$sites))
 }
     
     
