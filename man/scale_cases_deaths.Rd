@@ -4,7 +4,7 @@
 \alias{scale_cases_deaths}
 \title{scale outputs based on cases from WMR from 2000-2020}
 \usage{
-scale_cases_deaths(dt, site_data, scaling_data)
+scale_cases_deaths(dt, site_data, iso3c, scaling_data)
 }
 \arguments{
 \item{dt}{case output at country level}

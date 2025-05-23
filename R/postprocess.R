@@ -527,21 +527,6 @@ scale_cases_deaths<- function(dt, site_data, iso3c, scaling_data){
   return(dt)
 }
 
-test<- output |>
-  group_by(year, scenario)|>
-  summarise(cases= sum(cases),
-            deaths= sum(deaths),
-          .groups = 'keep')
-
-ggplot()+
-  geom_line(data = test, mapping = aes(x= year, y= cases, color= scenario))  +
-  geom_line(data= site_data$cases_deaths, mapping = aes(x= year, y= wmr_cases), color= 'darkgreen')+
-  labs(x= 'Time (in years)', y= 'Deaths',
-       title= paste0('Deaths over time'),
-       color= 'Scenario', fill= 'Scenario') +
-  scale_color_manual(values= wes_palette('Darjeeling1', n= 2)) +
-  scale_fill_manual(values= wes_palette('Darjeeling1', n= 2)) 
-
 
 #' postprocess model output at the site level
 #' @param dt   raw model output

@@ -4,7 +4,7 @@
 completed_reports<- function(report_name){
 
 
-  meta <- orderly2::orderly_metadata_extract(name = report_name, extract = c('time', 'parameters'),  options = orderly2::orderly_search_options(allow_remote = TRUE))
+  meta <- orderly2::orderly_metadata_extract(name = report_name, extract = c('time', 'parameters'),  orderly2::orderly_search_options(allow_remote = TRUE))
 
   meta<- meta |>
     mutate(directory_name = id) |>
@@ -82,7 +82,7 @@ make_parameter_map<- function(iso3cs,
 check_reports_completed<- function(report_name, map, date_time){
   map<- map |> select(-site_number)
 
-  completed<- completed_reports(report_name)
+  completed<- vimcmalaria::completed_reports(report_name)
   completed<- completed |>
     select(-directory_name)|>
     dplyr::filter(date_time >= {{date_time}})|>
@@ -289,7 +289,7 @@ get_raw_output<- function(index, map, output_filepath){
 compile_diagnostics<- function(descrip, date_time){
 
   completed<- completed_reports('diagnostics')
-  completed<- completed[description == {{descrip}} & date_time>= {{date_time}}] |>
+  completed<- completed[description == descrip & date_time>= date_time] |>
     dplyr::arrange(desc(date_time)) |>
     dplyr::distinct(iso3c, description, .keep_all = TRUE) |>
     dplyr::arrange(iso3c, description)
