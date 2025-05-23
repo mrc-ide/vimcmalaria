@@ -439,7 +439,7 @@ scale_par<- function(processed_output,
 
   print(names(le_africa))
   pars<- pars |>
-    dplyr::filter(iso3c == {{iso3c}}) |>
+   dplyr::filter(iso3c == {{iso3c}}) |>
     mutate(scaling_ratio = proportion_risk/ model_proportion_risk) |>
     rename(country = iso3c)# maybe I should scale both incidence and deaths here
 
@@ -485,7 +485,11 @@ add_proportions<- function(dt){
 #' @param site_data site file
 #' @param scaling_data data used to scale (from no-vaccine scenario)
 #' @export
-scale_cases_deaths<- function(dt, site_data, scaling_data){
+scale_cases_deaths<- function(dt, site_data, iso3c, scaling_data){
+
+  #scale scaling data based on population at risk
+  scaled<- add_proportions(scaling_data)
+  scaled<- scale_par(scaled, iso3c = iso3c)
 
   pre_scale<- scaling_data |>
     dplyr::group_by(year) |>
@@ -522,6 +526,21 @@ scale_cases_deaths<- function(dt, site_data, scaling_data){
 
   return(dt)
 }
+
+test<- output |>
+  group_by(year, scenario)|>
+  summarise(cases= sum(cases),
+            deaths= sum(deaths),
+          .groups = 'keep')
+
+ggplot()+
+  geom_line(data = test, mapping = aes(x= year, y= cases, color= scenario))  +
+  geom_line(data= site_data$cases_deaths, mapping = aes(x= year, y= wmr_cases), color= 'darkgreen')+
+  labs(x= 'Time (in years)', y= 'Deaths',
+       title= paste0('Deaths over time'),
+       color= 'Scenario', fill= 'Scenario') +
+  scale_color_manual(values= wes_palette('Darjeeling1', n= 2)) +
+  scale_fill_manual(values= wes_palette('Darjeeling1', n= 2)) 
 
 
 #' postprocess model output at the site level
