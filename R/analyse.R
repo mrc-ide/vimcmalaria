@@ -51,7 +51,12 @@ make_analysis_map<- function(site_df,
                              run_all){
 
 
+  
   site_info<- prev |> 
+    rename(ur= urban_rural,
+          site_name = name_1)
+
+    site_df<- site_df |> 
     rename(ur= urban_rural,
           site_name = name_1)
 
@@ -60,8 +65,8 @@ make_analysis_map<- function(site_df,
       mutate(run_model = TRUE)
   }
 
-  Encoding(site_info$site_name) <- "UTF-8"
-  site_info$site_name<- iconv(site_info$site_name, from="UTF-8", to="ASCII//TRANSLIT")
+  # Encoding(site_info$site_name) <- "UTF-8"
+  # site_info$site_name<- iconv(site_info$site_name, from="UTF-8", to="ASCII//TRANSLIT")
 
   site_info<- site_info |>
     dplyr::filter(run_model == TRUE) |>
@@ -70,7 +75,7 @@ make_analysis_map<- function(site_df,
            parameter_draw = {{parameter_draw}})
 
 
-  site_info<- merge(site_info, site_df, by = c('site_name', 'ur', 'iso3c'))
+  site_info<- merge(site_info, site_df, by = c('site_name', 'ur', 'iso3c', 'country'))
 
   if (test == TRUE) { site_info<- site_info[1:2,] }
 
