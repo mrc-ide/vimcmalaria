@@ -4,12 +4,10 @@
 \alias{pull_low_transmission_sites}
 \title{For vaccine scenarios, pull no-vaccination outputs for admin units < 10 \% PFPR}
 \usage{
-pull_low_transmission_sites(iso3c, site_data, processed_sites)
+pull_low_transmission_sites(iso3c, processed_sites)
 }
 \arguments{
 \item{iso3c}{country code}
-
-\item{site_data}{site data}
 
 \item{processed_sites}{site level output}
 }

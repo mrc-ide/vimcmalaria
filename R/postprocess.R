@@ -348,7 +348,6 @@ reformat_output<- function(output){
 #' For vaccine scenarios, pull no-vaccination outputs for admin units < 10 % PFPR
 #' @param processed_sites  site level output
 #' @param iso3c            country code
-#' @param site_data        site data
 #' @export
 pull_low_transmission_sites<- function(iso3c, processed_sites){
 
