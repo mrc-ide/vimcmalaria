@@ -4,7 +4,7 @@
 completed_reports<- function(report_name){
 
 
-  meta <- orderly2::orderly_metadata_extract(name = report_name, extract = c('time', 'parameters'),  orderly2::orderly_search_options(allow_remote = TRUE))
+  meta <- orderly2::orderly_metadata_extract(name = report_name, extract = c('time', 'parameters'), options= orderly2::orderly_search_options(allow_remote = TRUE))
 
   meta<- meta |>
     mutate(directory_name = id) |>
