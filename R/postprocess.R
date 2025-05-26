@@ -428,7 +428,7 @@ scale_par<- function(processed_output,
                      iso3c){
 
   print(names(le_africa))
-  pars<- par_scaling] |>
+  pars<- par_scaling |>
    dplyr::filter(iso3c == {{iso3c}}) |>
     mutate(scaling_ratio = proportion_risk/ model_proportion_risk) |>
     rename(country = iso3c)# maybe I should scale both incidence and deaths here
