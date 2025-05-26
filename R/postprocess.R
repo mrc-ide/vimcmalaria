@@ -350,29 +350,20 @@ reformat_output<- function(output){
 #' @param iso3c            country code
 #' @param site_data        site data
 #' @export
-pull_low_transmission_sites<- function(iso3c, site_data, processed_sites){
+pull_low_transmission_sites<- function(iso3c, processed_sites){
 
   # pull site output for no-vaccination for the low transmission settings
-
-  site_data$prevalence<- site_data$prevalence |>
-    dplyr::filter(year == 2024) |>
-    dplyr::mutate(run_model = ifelse(pfpr > 0.10, TRUE, FALSE)) |>
-    mutate(run_model = ifelse(name_1 == 'Toliary', TRUE, run_model)) |> #hardcoded exceptions
-    mutate(run_model = ifelse(name_1 %like% 'Gambela', TRUE, run_model)) |>
-    mutate(run_model = ifelse(name_1 %like% 'Bay', TRUE, run_model)) |>
-    mutate(run_model = ifelse(name_1 %like% 'Nouakchott', TRUE, run_model)) |>
-    mutate(run_model = ifelse(name_1 %like% 'Bolama', TRUE, run_model)) |>
-    mutate(run_model = ifelse(name_1 == 'South Darfur', TRUE, run_model)) |>
-    mutate(run_model = ifelse(name_1 == 'West Kurdufan', TRUE, run_model))
+ sites_run<- prev |> 
+   filter(iso3c== {{iso3c}}) 
 
 
-  if (length(unique(site_data$prevalence$run_model)) ==  1 &
-      site_data$prevalence$run_model[1] == TRUE) {
+  if (length(unique(sites_run$run_model)) ==  1 &
+      sites_run$run_model[1] == TRUE) {
 
     return(data.table())
   } else{
 
-    prevalence <- site_data$prevalence |>
+    prevalence <- sites_run |>
       select(name_1, urban_rural, iso3c, run_model) |>
       rename(site_name = name_1,
              ur = urban_rural)
