@@ -349,11 +349,11 @@ reformat_output<- function(output){
 #' @param processed_sites  site level output
 #' @param iso3c            country code
 #' @export
-pull_low_transmission_sites<- function(iso3c, processed_sites){
+pull_low_transmission_sites<- function(iso, processed_sites){
 
   # pull site output for no-vaccination for the low transmission settings
  sites_run<- prev |> 
-   filter(iso3c== {{iso3c}}) 
+   filter(iso3c== iso) 
 
 
   if (length(unique(sites_run$run_model)) ==  1 &
@@ -375,6 +375,8 @@ pull_low_transmission_sites<- function(iso3c, processed_sites){
     message(paste0('adding ', nrow(site_info), ' sites'))
     for (i in 1:nrow(site_info)) {
       site <- site_info[i, ]
+      message(site$site_name)
+      message(site$ur)
 
       add <- processed_sites |>
         dplyr::filter(site_name == site$site_name & urban_rural == site$ur)
