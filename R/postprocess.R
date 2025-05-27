@@ -481,7 +481,7 @@ scale_cases_deaths<- function(dt, site_data, iso3c, scaling_data){
   scaled<- add_proportions(scaling_data)
   scaled<- scale_par(scaled, iso3c = iso3c)
 
-  pre_scale<- scaling_data |>
+  pre_scale<- scaled |>
     dplyr::group_by(year) |>
     dplyr::summarise(cases = sum(cases),
                     deaths= sum(deaths)) |>
