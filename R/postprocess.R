@@ -556,7 +556,7 @@ scale_cases_deaths<- function(dt, site_data, scaling_data){
 
   scaling_cases<- merge(site_file_cases, pre_scale, by = 'year')
   scaling_cases<- scaling_cases |>
-    mutate(ratio= wmr_cases/ cases,
+    mutate(case_ratio= wmr_cases/ cases,
           death_ratio = wmr_deaths/ deaths) |>
     summarise(case_ratio = mean(case_ratio),
           death_ratio = mean(death_ratio))
