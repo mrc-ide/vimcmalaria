@@ -542,7 +542,7 @@ add_proportions<- function(dt){
 #' @param site_data site file
 #' @param scaling_data data used to scale (from no-vaccine scenario)
 #' @export
-scale_cases<- function(dt, site_data, scaling_data){
+scale_cases_deaths<- function(dt, site_data, scaling_data){
 
   pre_scale<- scaling_data |>
     dplyr::group_by(year) |>
