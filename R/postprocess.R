@@ -546,25 +546,30 @@ scale_cases<- function(dt, site_data, scaling_data){
 
   pre_scale<- scaling_data |>
     dplyr::group_by(year) |>
-    dplyr::summarise(cases = sum(cases)) |>
+    dplyr::summarise(cases = sum(cases),
+                     deaths= sum(deaths)) |>
     dplyr::filter(year %in% c(2018:2020))
 
   #average site file cases across last three years
-  site_file_cases<- data.table::data.table(site_data$cases_deaths[, c('year', 'wmr_cases')])
+  site_file_cases<- data.table::data.table(site_data$cases_deaths[, c('year', 'wmr_cases', 'wmr_deaths')])
   site_file_cases<- site_file_cases[year %in% c(2018:2020)]
 
   scaling_cases<- merge(site_file_cases, pre_scale, by = 'year')
   scaling_cases<- scaling_cases |>
-    mutate(ratio= wmr_cases/ cases)
-
-  ratio<- mean(scaling_cases$ratio)
+    mutate(ratio= wmr_cases/ cases,
+          death_ratio = wmr_deaths/ deaths) |>
+    summarise(case_ratio = mean(case_ratio),
+          death_ratio = mean(death_ratio))
+  
 
   # add pre-scaled cases to output df as a new column
   dt<- dt |>
-    mutate(pre_scaled_cases = cases)
+    mutate(pre_scaled_cases = cases,
+          pre_scaled_deaths = deaths)
 
   dt<- dt |>
-    mutate(cases = cases * ratio)
+    mutate(cases = cases * scaling_cases$case_ratio,
+          deaths = deaths *scaling_cases$death_ratio)
 
   dt<- dt|>
     mutate(clinical= cases/cohort_size,
