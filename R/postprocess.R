@@ -544,6 +544,11 @@ add_proportions<- function(dt){
 #' @export
 scale_cases_deaths<- function(dt, site_data, scaling_data){
 
+
+#scale scaling data based on population at risk
+    scaled<- add_proportions(scaling_data)
+    scaled<- scale_par(scaled, iso3c = iso3c)
+  
   pre_scale<- scaling_data |>
     dplyr::group_by(year) |>
     dplyr::summarise(cases = sum(cases),
