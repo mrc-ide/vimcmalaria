@@ -40,9 +40,8 @@ completed_reports<- function(report_name){
 #' @param quick_run quick run setting (boolean)
 #' @export
 make_parameter_map<- function(iso3cs,
-                              scenarios =  c('no-vaccination',
-                                             'malaria-r3-r4-default',
-                                             'malaria-rts3-rts4-default'),
+                              scenarios =  c('no-vaccination',,
+                                             'proxy'),
                               description,
                               parameter_draws,
                               quick_run){
