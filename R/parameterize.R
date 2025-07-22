@@ -150,7 +150,7 @@ parameterize_stochastic_run<- function(params, parameter_draw){
 update_coverage_values<- function(site, iso3c, coverage_data, scenario_name){
 
   coverage_data <- coverage_data |>
-    dplyr::filter(country_code == iso3c) |>
+    dplyr::filter(country_code == {{iso3c}}) |>
     dplyr::filter(scenario == scenario_name)
 
   dt <- coverage_data |>
@@ -161,7 +161,7 @@ update_coverage_values<- function(site, iso3c, coverage_data, scenario_name){
   if (length(vaccine_val) > 1){ stop('Can only implement one type of vaccine at a time. Check vaccine inputs.') }
 
   dt<- data.table::dcast(data.table::data.table(dt),
-             year + vaccine_name ~ vaccine,
+             year + dose1 + dose2 + dose3 + dose4 + intro_month + intro_yr + vaccine_name ~ vaccine,
              value.var= 'coverage')
 
   
