@@ -164,7 +164,7 @@ update_coverage_values<- function(site, iso3c, coverage_data, scenario_name){
              year + dose1 + dose2 + dose3 + dose4 + intro_month + intro_yr + vaccine_name ~ vaccine,
              value.var= 'coverage')
 
-  
+  print(vaccine_val)
   if(vaccine_val == 'R21'){
     dt<- dt |>
       rename(r21_cov = R3,
