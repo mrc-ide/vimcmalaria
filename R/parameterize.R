@@ -154,7 +154,7 @@ update_coverage_values<- function(site, iso3c, coverage_data, scenario_name){
     dplyr::filter(scenario == scenario_name)
 
   dt <- coverage_data |>
-    mutate(vaccine_name = ifelse(vaccine %like% 'RTS', 'RTS,S', 'R21'))
+    dplyr::mutate(vaccine_name = ifelse(vaccine %like% 'RTS', 'RTS,S', 'R21'))
 
   vaccine_val<- unique(dt$vaccine_name)
 
