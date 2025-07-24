@@ -40,9 +40,9 @@ site <- site::subset_site(
   site<- expand_intervention_coverage(site,
                                       terminal_year = run_params$term_yr)
   site<- update_coverage_values(site,
-                                iso3c = iso3c,
-                                coverage_data,
-                                scenario_name = scenario)
+                    iso3c = iso3c,
+                    coverage_data,
+                     scenario_name = scenario)
 
   # check the site has a non-zero EIR
   check_eir(site)
@@ -150,9 +150,10 @@ parameterize_stochastic_run<- function(params, parameter_draw){
 update_coverage_values<- function(site, iso3c, coverage_data, scenario_name){
 
   coverage_data <- coverage_data |>
-    dplyr::filter(country_code == {{iso3c}}) |>
+    dplyr::filter(country_code == iso3c) |>
     dplyr::filter(scenario == scenario_name)
 
+  head(coverage_data)
   dt <- coverage_data |>
     dplyr::mutate(vaccine_name = ifelse(vaccine %like% 'RTS', 'RTS,S', 'R21'))
 
