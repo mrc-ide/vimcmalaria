@@ -1,7 +1,10 @@
+# helper functions
+# workflow functions -----------------------------------------------------------------------------------------
 #'  check what reports completed (must be in orderly parent directory)
 #' @param report_name  name of orderly report to extract metadata from
+#' @param descrip      corresponds to the description parameter above.
 #' @export
-completed_reports<- function(report_name){
+completed_reports<- function(report_name, descrip){
 
 
   meta <- orderly2::orderly_metadata_extract(name = report_name, extract = c('time', 'parameters'), options= orderly2::orderly_search_options(allow_remote = TRUE))
@@ -15,9 +18,12 @@ completed_reports<- function(report_name){
   meta<- data.table(meta)
   meta<- meta[, index:= c(1:.N) ]
 
+  meta<- hoist(meta, parameters)
+
+  meta<- meta[1:nrow(meta),] #the first report run had different parameters than what is in production now, subset out
 
   unique(lapply(meta$parameters, names))
-  nms <- names(meta$parameters[[2]])
+  nms <- names(meta$parameters[[1]])
   pars <- do.call("data.frame", stats::setNames(lapply(nms, function(nm) sapply(meta$parameters, function(x) x[[nm]])), nms))
   pars<- data.table(pars)
   pars<- pars[, index:= c(1:.N)]
@@ -39,7 +45,7 @@ completed_reports<- function(report_name){
 #' @param parameter_draws draws to run model for
 #' @param quick_run quick run setting (boolean)
 #' @export
-make_parameter_map<- function(iso3cs,
+make_param_map<- function(iso3cs,
                               scenarios =  c('no-vaccination',
                                              'proxy'),
                               description,
@@ -63,7 +69,10 @@ make_parameter_map<- function(iso3cs,
       full_map<- rbind(subset, full_map)
     }}
 
-  full_map<- merge(full_map, site_counts, by = c('iso3c', 'scenario'))
+  test <- site_counts |> data.table::as.data.table()
+  test<- test[scenario == 'malaria-rts3-rts4-default', scenario := 'proxy']
+
+  full_map<- merge(full_map, test, by = c('iso3c', 'scenario'))
   full_map<- data.table::setorder(full_map, parameter_draw, -site_number)
 
   full_map<- full_map |>
@@ -92,7 +101,6 @@ check_reports_completed<- function(report_name, map, date_time){
   return(intersection)
 
 }
-
 
 #' Return a list of the reports that are not a rerun based on orderly metadata
 #' @param report_name  name of orderly report to extract metadata from
