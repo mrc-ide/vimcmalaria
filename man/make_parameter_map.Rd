@@ -6,7 +6,7 @@
 \usage{
 make_parameter_map(
   iso3cs,
-  scenarios = c("no-vaccination", "malaria-r3-r4-default", "malaria-rts3-rts4-default"),
+  scenarios = c("no-vaccination", "proxy"),
   description,
   parameter_draws,
   quick_run

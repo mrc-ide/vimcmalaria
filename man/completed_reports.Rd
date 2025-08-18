@@ -4,10 +4,12 @@
 \alias{completed_reports}
 \title{check what reports completed (must be in orderly parent directory)}
 \usage{
-completed_reports(report_name)
+completed_reports(report_name, descrip)
 }
 \arguments{
 \item{report_name}{name of orderly report to extract metadata from}
+
+\item{descrip}{corresponds to the description parameter above.}
 }
 \description{
 check what reports completed (must be in orderly parent directory)
