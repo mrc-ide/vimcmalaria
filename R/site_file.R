@@ -30,7 +30,8 @@ remove_zero_eirs<- function(iso3c, sites){
   }
 } else {
   message("No zero eir sites to remove")
-}
+    site<- sites$sites
+  }
 
   return(data.table(site))
 }
