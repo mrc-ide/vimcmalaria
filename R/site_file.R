@@ -5,7 +5,7 @@
 #' @export
 remove_zero_eirs<- function(iso3c, sites){
 
-  if(nrow(sites$eir) != nrow(sites$sites)){
+
 
     full_sites<- sites$sites |>
       mutate(site_ur := paste0(name_1, '_', urban_rural))
@@ -13,10 +13,12 @@ remove_zero_eirs<- function(iso3c, sites){
 
 
     full_eirs<- sites$eir |>
+      filter(sp== 'pf') |>
       mutate(site_ur := paste0(name_1, '_', urban_rural))
 
 
-    no_eir<- setdiff(unique(full_sites$site_ur), unique(full_eirs$site_ur))
+    if(nrow(full_sites) != nrow(full_eirs)){
+    no_eir<- setdiff(unique(full_eirs$site_ur), unique(full_sites$site_ur))
 
     remove<- full_sites |>
       filter(site_ur %in% no_eir) |>
