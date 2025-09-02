@@ -41,7 +41,6 @@ analyse_site<- function(site,
 
 #' make an analysis map of input parameters for vaccine modelling run
 #' @param site_df   analysis map with input parameters
-#' @param site_data site data
 #' @param test      boolean-- if true, only run analysis for two test sites. Good for quick tests of code functionality
 #' @param run_all   run all sites regardless of pfpr (boolean)
 #' @returns analysis map to be used as an input for analyse_site

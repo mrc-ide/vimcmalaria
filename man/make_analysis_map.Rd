@@ -12,8 +12,6 @@ make_analysis_map(site_df, test, run_all)
 \item{test}{boolean-- if true, only run analysis for two test sites. Good for quick tests of code functionality}
 
 \item{run_all}{run all sites regardless of pfpr (boolean)}
-
-\item{site_data}{site data}
 }
 \value{
 analysis map to be used as an input for analyse_site
