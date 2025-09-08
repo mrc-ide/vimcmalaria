@@ -135,7 +135,8 @@ check_not_a_rerun<- function(report_name, map, date){
 run_local_reports<- function(map, report_name){
 
   if('site_number' %in% colnames(map)){
-    map$site_number<- NULL
+    map<- map |> 
+      select(-site_number)
   }
   for(index in c(1:nrow(map))){
 
@@ -176,6 +177,8 @@ submit_by_core<- function(core, dt, test= FALSE){
       dt)
 
   }else{
+    no<- unique(dt$site_number)
+    dt <- dt |> select(-site_number)
 
     hipercow::task_create_bulk_expr(
       orderly2::orderly_run(
@@ -186,7 +189,7 @@ submit_by_core<- function(core, dt, test= FALSE){
                           scenario = scenario,
                           parameter_draw = parameter_draw)),
       dt,
-      resources = hipercow::hipercow_resources(cores = unique(dt$site_number)))
+      resources = hipercow::hipercow_resources(cores = no ))
 
   }
 
