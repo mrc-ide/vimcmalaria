@@ -434,7 +434,8 @@ scale_par<- function(processed_output,
    dplyr::filter(iso3c == {{iso3c}}) |>
     mutate(scaling_ratio = proportion_risk/ model_proportion_risk) |>
     mutate(scaling_ratio = ifelse(iso3c == 'SDN', 1.04, scaling_ratio)) |>
-    rename(country = iso3c)# maybe I should scale both incidence and deaths here
+    rename(country = iso3c)|>
+    unique()# maybe I should scale both incidence and deaths here
 
 
   processed_output<- merge(pars, processed_output, by = 'country')
