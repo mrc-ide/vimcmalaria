@@ -33,7 +33,7 @@ site <- site::subset_site(
 )
   run_params<- pull_age_groups_time_horizon(quick_run)
 
-  if(iso3c == 'ETH'){
+  if(iso3c == 'ETH' | iso3c == 'GNB'){
     run_params$pop_val<- 150000
   }
   # specify vaccine coverage based on forecast  --------------------------------
@@ -236,4 +236,63 @@ expand_intervention_coverage<- function(site, terminal_year){
     scene::fill_extrapolate(group_var = group_var)
 
   return(site)
+}
+
+
+#' recalibration for certain countries (Guinea Bissau in this case, because elimination is occurring there)
+#' @param   input             modelling input
+#' @param   yr                year to calibrate to MAP prevalence data
+#' @param   site_data         site data which contains the MAP prevalence data
+#' @returns site file with extrapolated coverage values out to terminal year
+#' @export
+recalibrate<- function(input, site_data, yr){
+  
+  
+  summary_mean_pfpr_2_10 <- function (x) {
+    message('calibrating')
+    x<- data.table(x)
+    # Calculate the PfPR2-10:
+    prev_2_10 <- mean(x[timestep %in% c(((yr-2000)*365):((yr+1-2000)*365))]$n_detect_pcr_730_3649/x[timestep %in% c(((yr-2000)*365):((yr+1-2000)* 365))]$n_age_730_3649) # average over a year 
+    
+    # Return the calculated PfPR2-10:
+    return(prev_2_10)
+  }
+  
+  
+  summary_mean_pfpr_2_10(output)
+
+  # pull target pfpr from corresponding yr for corresponding site
+  target_pfpr <- site_data$prevalence |> filter(year == yr, name_1 == site_name, urban_rural== ur) |> pull(pfpr)
+  
+  print(paste0('target pfpr ', target_pfpr ))
+  
+  # Add a parameter to the parameter list specifying the number of timesteps 
+  simparams<- input$param_list
+  simparams$timesteps <- (yr-2000+5) * 365
+  # no burnin so it's faster
+  simparams$burnin<- 0
+  simparams$human_population<- 2000 # make the population very small to start
+  simparams$progress_bar<- TRUE
+  # Establish a tolerance value:
+  pfpr_tolerance <- 0.01
+  
+  # Set upper and lower EIR bounds for the calibrate function to check
+  lower_EIR <- 0.01; upper_EIR <- 60
+  
+  output<- run_simulation(timesteps = simparams$timesteps, parameters = simparams)
+
+
+# plot this against parasite prevalence to see how ther original calibration looks
+
+  # Run the calibrate() function:
+  cali_EIR <- calibrate(target = target_pfpr,
+                        summary_function = summary_mean_pfpr_2_10,
+                        parameters = simparams,
+                        tolerance = pfpr_tolerance, 
+                        low = lower_EIR, high = upper_EIR)
+  
+  print(paste0('calibrated EIR for site ', input$site_name, ' :', cali_EIR))
+  simparams<- set_equilibrium(simparams, init_EIR = cali_EIR)
+
+  return(simparams)
 }
