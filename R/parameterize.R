@@ -71,9 +71,9 @@ site <- site::subset_site(
 
   if (description == 'fixed_demography'){
   demo <- site$demography[site$demography$year == '2000',] #fixing demography to what occurred in 2000
-  ages <- round(unique(site$demography$age_upper) * 365)
-  timesteps <- 365 * (unique(site$demography$year) - 2000)
-  deathrates <- site$demography$adjusted_mortality_rates / 365
+  ages <- round(unique(demo$age_upper) * 365)
+  timesteps <- 365 * (unique(demo$year) - 2000)
+  deathrates <- demo$adjusted_mortality_rates / 365
   deathrates_matrix <- matrix(deathrates, nrow = length(timesteps), byrow = TRUE)
 
   # Add parameters
