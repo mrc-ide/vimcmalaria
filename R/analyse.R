@@ -73,7 +73,7 @@ make_analysis_map<- function(site_df,
     mutate(scenario = {{scenario}},
            quick_run = {{quick_run}},
            parameter_draw = {{parameter_draw}},
-          description == {{description}})
+          description = {{description}})
 
 
   site_info<- merge(site_info, site_df, by = c('site_name', 'ur', 'iso3c', 'country'))
