@@ -18,7 +18,8 @@ analyse_site<- function(site,
                                   scenario = site$scenario,
                                   iso3c = site$iso3c,
                                   parameter_draw = site$parameter_draw,
-                                  quick_run = site$quick_run)
+                                  quick_run = site$quick_run,
+                                 description = site$description)
 
 
   model<- run_model(model_input)

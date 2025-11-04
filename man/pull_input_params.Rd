@@ -13,7 +13,8 @@ pull_input_params(
   coverage_data,
   scenario,
   parameter_draw,
-  quick_run
+  quick_run,
+  description
 )
 }
 \arguments{

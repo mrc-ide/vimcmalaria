@@ -18,7 +18,8 @@ pull_input_params<- function(site_name,
                              coverage_data,
                              scenario,
                              parameter_draw,
-                             quick_run){
+                             quick_run, 
+                            description){
 
   message('parameterizing')
   # site data
@@ -66,6 +67,27 @@ site <- site::subset_site(
   params$severe_incidence_rendering_max_ages = run_params$max_ages
   params$age_group_rendering_min_ages = run_params$min_ages
   params$age_group_rendering_max_ages = run_params$max_ages
+
+
+  if (description == 'fixed_demography'){
+  demo <- site$demography[site$demography$year == '2000',] #fixing demography to what occurred in 2000
+  ages <- round(unique(site$demography$age_upper) * 365)
+  timesteps <- 365 * (unique(site$demography$year) - 2000)
+  deathrates <- site$demography$adjusted_mortality_rates / 365
+  deathrates_matrix <- matrix(deathrates, nrow = length(timesteps), byrow = TRUE)
+
+  # Add parameters
+  params_fixed <- malariasimulation::set_demography(
+    parameters = params,
+    agegroups = ages,
+    timesteps = timesteps,
+    deathrates = deathrates_matrix
+  )
+  
+params<- params_fixed
+    message('fixed demography to 2000 values')
+  }
+
 
   # if this is a stochastic run, set parameter draw ------------------------------
   params<- parameterize_stochastic_run(params, parameter_draw)
