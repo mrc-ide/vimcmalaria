@@ -69,10 +69,25 @@ site <- site::subset_site(
   params$age_group_rendering_max_ages = run_params$max_ages
 
 
+
+
   if (description == 'fixed_demography'){
-  demo <- site$demography[site$demography$year == '2000',] #fixing demography to what occurred in 2000
+    
+  demo<- site$demography
+    
+  # want to merge on 2025 rates for years 2026-2100
+ demo<- demo |>
+  group_by(iso3c, age_lower, age_upper) |>
+  mutate(mort_2025 = adjusted_mortality_rates[year == 2025][1]) |>     # guaranteed scalar
+  mutate(adjusted_mortality_rates = if_else(year >= 2026,
+                             mort_2025,
+                             adjusted_mortality_rates)) |>
+  ungroup() |>
+  select(-mort_2025)
+    
   ages <- round(unique(demo$age_upper) * 365)
   timesteps <- 365 * (unique(demo$year) - 2000)
+    
   deathrates <- demo$adjusted_mortality_rates / 365
   deathrates_matrix <- matrix(deathrates, nrow = length(timesteps), byrow = TRUE)
 
@@ -85,7 +100,7 @@ site <- site::subset_site(
   )
   
 params<- params_fixed
-    message('fixed demography to 2000 values')
+    message('fixed demography to 2025 values')
   }
 
 
