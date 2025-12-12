@@ -7,7 +7,7 @@
 completed_reports<- function(report_name, descrip){
 
 
-  meta <- orderly2::orderly_metadata_extract(name = report_name, extract = c('time', 'parameters'), options= orderly2::orderly_search_options(allow_remote = TRUE))
+  meta <- orderly::orderly_metadata_extract(name = report_name, extract = c('time', 'parameters'), options= orderly::orderly_search_options(allow_remote = TRUE))
 
   meta<- meta |>
     mutate(directory_name = id) |>
@@ -143,7 +143,7 @@ run_local_reports<- function(map, report_name){
     print(index)
     message(index)
     params<- as.list(map[index,])
-    orderly2::orderly_run(name = report_name, parameters = params)
+    orderly::orderly_run(name = report_name, parameters = params)
 
   }
 
@@ -167,7 +167,7 @@ submit_by_core<- function(core, dt, test= FALSE){
     dt <- dt |> select(-site_number)
 
     hipercow::task_create_bulk_expr(
-      orderly2::orderly_run(
+      orderly::orderly_run(
         "process_country",
         parameters = list(iso3c = iso3c,
                           description = description,
@@ -181,7 +181,7 @@ submit_by_core<- function(core, dt, test= FALSE){
     dt <- dt |> select(-site_number)
 
     hipercow::task_create_bulk_expr(
-      orderly2::orderly_run(
+      orderly::orderly_run(
         "process_country",
         parameters = list(iso3c = iso3c,
                           description = description,
