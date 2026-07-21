@@ -45,6 +45,31 @@ site <- site::subset_site(
                     coverage_data,
                      scenario_name = scenario)
 
+
+  
+  # update intervention coverage for sensitivity analyses 
+  # make vaccine coverage constant after 2024 for sensitivity analysis
+  if(description == 'constant coverage' & scenario == 'proxy'){
+    site$interventions<- site$interventions |>
+      dplyr::mutate(rtss_cov = ifelse(year > 2024, 1, rtss_cov),
+                    rtss_booster = ifelse(year > 2024, 1, rtss_booster))
+  }
+
+
+if (description == 'reduced NVMIs'){
+
+  # set the interventions to be reduced by like 30% from 2024 value
+  # for itn use just multiply by 0.7 for all years after 2024
+site$interventions<- site$interventions |>
+  dplyr::mutate(itn_use = ifelse(year > 2024,  itn_use * 0.7, itn_use),
+                itn_input_dist= ifelse(year > 2024, itn_input_dist * 0.7, itn_input_dist),
+                predicted_use= ifelse(year > 2024, predicted_use * 0.7, predicted_use),
+                irs_cov = ifelse(year > 2024, irs_cov * 0.7, irs_cov))
+  
+  }
+    #scene::plot_interventions(site$interventions, group_var= c('name_1', 'urban_rural'), population= site$population$population_total) plot to check I've parameterised correctly
+
+
   # check the site has a non-zero EIR
   check_eir(site)
 
@@ -68,40 +93,6 @@ site <- site::subset_site(
   params$age_group_rendering_min_ages = run_params$min_ages
   params$age_group_rendering_max_ages = run_params$max_ages
 
-
-
-
-  if (description == 'fixed_demography'){
-    
-  demo<- site$demography
-    
-  # want to merge on 2025 rates for years 2026-2100
- demo<- demo |>
-  group_by(iso3c, age_lower, age_upper) |>
-  mutate(mort_2025 = adjusted_mortality_rates[year == 2025][1]) |>     # guaranteed scalar
-  mutate(adjusted_mortality_rates = if_else(year >= 2026,
-                             mort_2025,
-                             adjusted_mortality_rates)) |>
-  ungroup() |>
-  select(-mort_2025)
-    
-  ages <- round(unique(demo$age_upper) * 365)
-  timesteps <- 365 * (unique(demo$year) - 2000)
-    
-  deathrates <- demo$adjusted_mortality_rates / 365
-  deathrates_matrix <- matrix(deathrates, nrow = length(timesteps), byrow = TRUE)
-
-  # Add parameters
-  params_fixed <- malariasimulation::set_demography(
-    parameters = params,
-    agegroups = ages,
-    timesteps = timesteps,
-    deathrates = deathrates_matrix
-  )
-  
-params<- params_fixed
-    message('fixed demography to 2025 values')
-  }
 
 
   # if this is a stochastic run, set parameter draw ------------------------------
