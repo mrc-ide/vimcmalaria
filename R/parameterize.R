@@ -61,10 +61,10 @@ if (description == 'reduced NVMIs'){
   # set the interventions to be reduced by like 30% from 2024 value
   # for itn use just multiply by 0.7 for all years after 2024
 site$interventions<- site$interventions |>
-  dplyr::mutate(itn_use = ifelse(year > 2024,  itn_use * 0.7, itn_use),
-                itn_input_dist= ifelse(year > 2024, itn_input_dist * 0.7, itn_input_dist),
-                predicted_use= ifelse(year > 2024, predicted_use * 0.7, predicted_use),
-                irs_cov = ifelse(year > 2024, irs_cov * 0.7, irs_cov))
+  dplyr::mutate(itn_use = ifelse(year > 2024,  itn_use * 0.5, itn_use),
+                itn_input_dist= ifelse(year > 2024, itn_input_dist * 0.5, itn_input_dist),
+                predicted_use= ifelse(year > 2024, predicted_use * 0.5, predicted_use),
+                irs_cov = ifelse(year > 2024, irs_cov * 0.5, irs_cov))
   
   }
     #scene::plot_interventions(site$interventions, group_var= c('name_1', 'urban_rural'), population= site$population$population_total) plot to check I've parameterised correctly
